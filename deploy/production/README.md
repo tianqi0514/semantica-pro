@@ -13,6 +13,8 @@ Create these files beside `docker-compose.yml`; do not commit them:
   - Optional: `PYPI_INDEX_URL=https://your-nearby-pypi-mirror/simple`
 - `.htpasswd`
   - Generate with `openssl passwd -apr1` or `htpasswd`.
+  - On Linux bind-mount deployments, run `chmod 644 .htpasswd` so the
+    unprivileged Nginx worker can read the password hashes.
 
 ## Build and start
 

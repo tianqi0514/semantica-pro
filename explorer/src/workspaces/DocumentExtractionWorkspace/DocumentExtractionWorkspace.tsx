@@ -1,26 +1,46 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   AlertCircle,
+  BookCopy,
   CheckCircle2,
   Clock3,
+  Copy,
   Database,
   Download,
   FileJson,
   FileText,
   KeyRound,
+  Layers3,
   LoaderCircle,
   Network,
+  Plus,
   Save,
   ScanText,
   ShieldCheck,
   Sparkles,
+  Trash2,
   UploadCloud,
   X,
 } from 'lucide-react';
 import './DocumentExtractionWorkspace.css';
 
-type View = 'extract' | 'settings';
+type View = 'extract' | 'templates' | 'settings';
 type PreviewTab = 'graph' | 'text' | 'entities' | 'relationships';
+
+type ScenarioRef = { id: string; name: string; version: number };
+type ScenarioTemplate = {
+  id: string;
+  name: string;
+  description: string;
+  category: string;
+  enabled: boolean;
+  built_in: boolean;
+  version: number;
+  config: Record<string, unknown>;
+  created_at: string;
+  updated_at: string;
+};
+type ScenarioWrite = Pick<ScenarioTemplate, 'name' | 'description' | 'category' | 'enabled' | 'config'>;
 
 type LLMSettings = {
   provider: 'kimi';
@@ -37,7 +57,7 @@ type Entity = {
   type: string;
   text: string;
   confidence: number;
-  metadata?: { evidence?: Evidence[] };
+  metadata?: { evidence?: Evidence[]; scenario_refs?: ScenarioRef[] };
 };
 type Relationship = {
   id: string;
@@ -45,11 +65,12 @@ type Relationship = {
   target: string;
   type: string;
   weight?: number;
-  metadata?: { confidence?: number; evidence?: Evidence[] };
+  metadata?: { confidence?: number; evidence?: Evidence[]; scenario_refs?: ScenarioRef[] };
 };
 type ExtractionResult = {
-  run: { scenario: string; method: string; provider?: string; model?: string };
-  documents: Array<{ name: string; text_preview: string; character_count: number; chunk_count: number }>;
+  run: { scenario: string; scenario_ids?: string[]; scenario_names?: string[]; method: string; provider?: string; model?: string };
+  scenarios?: Array<ScenarioRef & { runs_succeeded: number; runs_failed: number; entities: number; relationships: number }>;
+  documents: Array<{ id?: string; name: string; text_preview: string; character_count: number; chunk_count: number; scenario_refs?: ScenarioRef[] }>;
   entities: Entity[];
   relationships: Relationship[];
   statistics: {
@@ -76,6 +97,10 @@ type BatchItem = {
   stage?: string;
   stage_started_at?: string;
   stage_elapsed_seconds?: number;
+  scenario_id?: string;
+  scenario_name?: string;
+  scenario_version?: number;
+  file_index?: number;
   entities_found?: number;
   relationships_found?: number;
   started_at?: string;
@@ -98,6 +123,7 @@ type JobProgress = {
   percent: number;
   current_index: number | null;
   current_file: string | null;
+  current_scenario?: string | null;
   current_stage: string | null;
   elapsed_seconds: number;
   result_ready: boolean;
@@ -138,6 +164,10 @@ function evidence(metadata?: { evidence?: Evidence[] }) {
   return metadata?.evidence?.[0]?.text || '—';
 }
 
+function scenarioNames(metadata?: { scenario_refs?: ScenarioRef[] }) {
+  return metadata?.scenario_refs?.map((item) => item.name).join('、') || '—';
+}
+
 function durationLabel(seconds: number) {
   const safeSeconds = Math.max(0, Math.floor(seconds || 0));
   const minutes = Math.floor(safeSeconds / 60);
@@ -151,6 +181,14 @@ function rememberActiveJob(jobId: string | null) {
     else window.localStorage.removeItem(ACTIVE_JOB_STORAGE_KEY);
   } catch {
     // Progress still works in the current page when browser storage is unavailable.
+  }
+}
+
+function readRememberedActiveJob() {
+  try {
+    return window.localStorage.getItem(ACTIVE_JOB_STORAGE_KEY);
+  } catch {
+    return null;
   }
 }
 
@@ -204,7 +242,7 @@ function JobProgressPanel({ progress }: { progress: JobProgress }) {
   const terminal = ['completed', 'partial', 'failed'].includes(progress.status);
   const title = terminal
     ? progress.status === 'completed' ? '全部文件抽取完成' : progress.status === 'partial' ? '抽取完成，部分文件失败' : '抽取任务失败'
-    : current ? `正在处理第 ${current.index} / ${progress.total} 个文件` : '任务已进入后台队列';
+    : current ? `正在处理第 ${current.index} / ${progress.total} 个“文档 × 模板”任务` : '任务已进入后台队列';
 
   return (
     <div className="de-progress-card">
@@ -212,7 +250,7 @@ function JobProgressPanel({ progress }: { progress: JobProgress }) {
         <div>
           <span className="ws-eyebrow">Background extraction · {progress.job_id.slice(0, 8)}</span>
           <h2>{title}</h2>
-          <p>{current ? current.source_name : progress.message || (terminal ? '结果正在准备预览。' : '文件已上传，正在等待抽取。')}</p>
+          <p>{current ? `${current.source_name} · ${current.scenario_name || '场景模板'}` : progress.message || (terminal ? '结果正在准备预览。' : '文件已上传，正在等待抽取。')}</p>
         </div>
         <strong className="de-progress-percent">{progress.percent}%</strong>
       </div>
@@ -220,7 +258,7 @@ function JobProgressPanel({ progress }: { progress: JobProgress }) {
         <span style={{ width: `${progress.percent}%` }} />
       </div>
       <div className="de-progress-metrics">
-        <div><strong>{progress.completed} / {progress.total}</strong><span>已处理文件</span></div>
+        <div><strong>{progress.completed} / {progress.total}</strong><span>已处理任务</span></div>
         <div><strong>{progress.succeeded}</strong><span>成功</span></div>
         <div><strong>{progress.failed}</strong><span>失败</span></div>
         <div><strong><Clock3 size={13} />{durationLabel(progress.elapsed_seconds)}</strong><span>已用时间</span></div>
@@ -229,7 +267,7 @@ function JobProgressPanel({ progress }: { progress: JobProgress }) {
         <>
           <div className="de-current-file">
             <LoaderCircle className="ws-spin" size={15} />
-            <span><strong>{stageLabel(current.stage, progress.method)}</strong>{current.source_name}</span>
+            <span><strong>{stageLabel(current.stage, progress.method)}</strong>{current.source_name} · {current.scenario_name}</span>
             <small>
               已等待 {durationLabel(current.stage_elapsed_seconds || 0)}
               {current.chunks_total ? ` · 分块 ${Math.min((current.chunks_completed || 0) + 1, current.chunks_total)}/${current.chunks_total}` : ''}
@@ -247,7 +285,7 @@ function JobProgressPanel({ progress }: { progress: JobProgress }) {
             <span className="de-progress-file-icon">
               {item.status === 'completed' ? <CheckCircle2 size={14} /> : item.status === 'failed' ? <AlertCircle size={14} /> : item.status === 'processing' ? <LoaderCircle className="ws-spin" size={14} /> : item.index}
             </span>
-            <span className="de-progress-file-name">{item.source_name}</span>
+            <span className="de-progress-file-name">{item.source_name}<em>{item.scenario_name}</em></span>
             <small>
               {item.status === 'queued' ? '等待处理' : item.status === 'processing'
                 ? `${stageLabel(item.stage, progress.method)} · ${durationLabel(item.stage_elapsed_seconds || 0)}`
@@ -314,19 +352,13 @@ function GraphPreview({ entities, relationships }: { entities: Entity[]; relatio
   );
 }
 
-function SettingsView({ settings, onSettingsChanged }: { settings: LLMSettings | null; onSettingsChanged: (settings: LLMSettings) => void }) {
-  const [model, setModel] = useState('kimi-k3');
-  const [baseUrl, setBaseUrl] = useState('https://api.moonshot.cn/v1');
+function SettingsView({ settings, onSettingsChanged }: { settings: LLMSettings; onSettingsChanged: (settings: LLMSettings) => void }) {
+  const [model, setModel] = useState(settings.model);
+  const [baseUrl, setBaseUrl] = useState(settings.base_url);
   const [apiKey, setApiKey] = useState('');
   const [saving, setSaving] = useState(false);
   const [testing, setTesting] = useState(false);
   const [message, setMessage] = useState<{ text: string; error?: boolean } | null>(null);
-
-  useEffect(() => {
-    if (!settings) return;
-    setModel(settings.model);
-    setBaseUrl(settings.base_url);
-  }, [settings]);
 
   async function saveSettings(clearApiKey = false) {
     setSaving(true);
@@ -452,44 +484,213 @@ function SettingsView({ settings, onSettingsChanged }: { settings: LLMSettings |
   );
 }
 
+const EMPTY_SCENARIO_CONFIG: Record<string, unknown> = {
+  scenario_name: '新场景模板',
+  method: 'llm',
+  provider: 'kimi',
+  model: 'kimi-k3',
+  base_url: 'https://api.moonshot.cn/v1',
+  entity_confidence: 0.55,
+  relation_confidence: 0.55,
+  chunk_size: 5000,
+  chunk_overlap: 300,
+  extract_temporal_bounds: true,
+  entity_types: [
+    { name: 'BUSINESS_ENTITY', label: '业务对象', description: '需要从文档中识别的核心业务对象', aliases: [], patterns: [] },
+  ],
+  relation_types: [],
+};
+
+function TemplateCenter() {
+  const [templates, setTemplates] = useState<ScenarioTemplate[]>([]);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [draft, setDraft] = useState<ScenarioWrite | null>(null);
+  const [configText, setConfigText] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [message, setMessage] = useState<{ text: string; error?: boolean } | null>(null);
+
+  async function loadTemplates(preferredId?: string) {
+    const payload = await apiRequest<{ templates: ScenarioTemplate[] }>('/api/scenarios');
+    setTemplates(payload.templates);
+    const requestedId = preferredId || selectedId;
+    const selected = payload.templates.find((item) => item.id === requestedId) || payload.templates[0];
+    setSelectedId(selected?.id || null);
+    if (selected) {
+      setDraft({ name: selected.name, description: selected.description, category: selected.category, enabled: selected.enabled, config: selected.config });
+      setConfigText(JSON.stringify(selected.config, null, 2));
+    }
+    return payload.templates;
+  }
+
+  useEffect(() => {
+    let cancelled = false;
+    apiRequest<{ templates: ScenarioTemplate[] }>('/api/scenarios')
+      .then((payload) => {
+        if (cancelled) return;
+        setTemplates(payload.templates);
+        const selected = payload.templates[0];
+        setSelectedId(selected?.id || null);
+        if (selected) {
+          setDraft({ name: selected.name, description: selected.description, category: selected.category, enabled: selected.enabled, config: selected.config });
+          setConfigText(JSON.stringify(selected.config, null, 2));
+        }
+      })
+      .catch((error: unknown) => {
+        if (!cancelled) setMessage({ text: error instanceof Error ? error.message : String(error), error: true });
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => { cancelled = true; };
+  }, []);
+
+  function selectTemplate(template: ScenarioTemplate) {
+    setSelectedId(template.id);
+    setDraft({ name: template.name, description: template.description, category: template.category, enabled: template.enabled, config: template.config });
+    setConfigText(JSON.stringify(template.config, null, 2));
+    setMessage(null);
+  }
+
+  function createBlank() {
+    const blank: ScenarioWrite = {
+      name: '新场景模板',
+      description: '说明这个模板适用于哪些材料，以及希望从中得到什么结果。',
+      category: '通用',
+      enabled: true,
+      config: structuredClone(EMPTY_SCENARIO_CONFIG),
+    };
+    setSelectedId(null);
+    setDraft(blank);
+    setConfigText(JSON.stringify(blank.config, null, 2));
+    setMessage({ text: '正在新建模板，填写完成后点击保存' });
+  }
+
+  async function saveTemplate() {
+    if (!draft) return;
+    setSaving(true);
+    setMessage(null);
+    try {
+      const config = JSON.parse(configText) as Record<string, unknown>;
+      const payload = { ...draft, config };
+      const saved = await apiRequest<ScenarioTemplate>(selectedId ? `/api/scenarios/${selectedId}` : '/api/scenarios', {
+        method: selectedId ? 'PUT' : 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      await loadTemplates(saved.id);
+      setMessage({ text: `模板已保存为 v${saved.version}` });
+    } catch (error) {
+      setMessage({ text: error instanceof Error ? error.message : String(error), error: true });
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function duplicateTemplate() {
+    if (!selectedId) return;
+    setSaving(true);
+    try {
+      const copied = await apiRequest<ScenarioTemplate>(`/api/scenarios/${selectedId}/duplicate`, { method: 'POST' });
+      await loadTemplates(copied.id);
+      setMessage({ text: '已创建独立副本，可以安全修改' });
+    } catch (error) {
+      setMessage({ text: error instanceof Error ? error.message : String(error), error: true });
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function deleteTemplate() {
+    const selected = templates.find((item) => item.id === selectedId);
+    if (!selected || selected.built_in) return;
+    if (!window.confirm(`确认删除“${selected.name}”吗？历史抽取结果不会被删除。`)) return;
+    setSaving(true);
+    try {
+      await apiRequest<null>(`/api/scenarios/${selected.id}`, { method: 'DELETE' });
+      const remaining = await loadTemplates();
+      if (!remaining.length) createBlank();
+      setMessage({ text: '自定义模板已删除，历史结果仍保留模板名称与版本标识' });
+    } catch (error) {
+      setMessage({ text: error instanceof Error ? error.message : String(error), error: true });
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  const selected = templates.find((item) => item.id === selectedId);
+  return (
+    <div className="de-template-page">
+      <aside className="de-template-library">
+        <div className="de-template-library-head">
+          <div><span className="ws-eyebrow">Scenario catalogue</span><h2>场景模板</h2><p>模板决定抽取目标；一次任务可以多选。</p></div>
+          <button className="ws-btn ws-btn--primary" onClick={createBlank}><Plus size={14} />新建</button>
+        </div>
+        <div className="de-template-list">
+          {loading ? <div className="de-template-empty"><LoaderCircle className="ws-spin" size={18} />正在加载模板</div> : null}
+          {templates.map((template) => (
+            <button key={template.id} data-active={selectedId === template.id} data-enabled={template.enabled} onClick={() => selectTemplate(template)}>
+              <span className="de-template-card-top"><strong>{template.name}</strong><i>{template.built_in ? '内置' : '自定义'}</i></span>
+              <span>{template.description}</span>
+              <small><b>{template.category}</b><em>v{template.version}</em><em>{template.enabled ? '已启用' : '已停用'}</em></small>
+            </button>
+          ))}
+        </div>
+      </aside>
+
+      <main className="de-template-editor">
+        {!draft ? <div className="de-template-empty"><BookCopy size={30} />选择一个模板，或新建模板</div> : <>
+          <div className="de-template-editor-head">
+            <div><span className="ws-eyebrow">{selected ? `${selected.id} · v${selected.version}` : 'Unsaved template'}</span><h2>{selected ? '编辑场景模板' : '新建场景模板'}</h2></div>
+            <div>
+              {selectedId ? <button className="ws-btn ws-btn--ghost" disabled={saving} onClick={() => void duplicateTemplate()}><Copy size={14} />复制</button> : null}
+              {selected && !selected.built_in ? <button className="ws-btn ws-btn--danger" disabled={saving} onClick={() => void deleteTemplate()}><Trash2 size={14} />删除</button> : null}
+              <button className="ws-btn ws-btn--primary" disabled={saving || !draft.name.trim()} onClick={() => void saveTemplate()}>{saving ? <LoaderCircle className="ws-spin" size={14} /> : <Save size={14} />}保存模板</button>
+            </div>
+          </div>
+          <div className="de-template-form">
+            <label className="de-field"><span>模板名称</span><input className="ws-input" value={draft.name} onChange={(event) => setDraft({ ...draft, name: event.target.value })} /></label>
+            <label className="de-field"><span>业务分类</span><input className="ws-input" value={draft.category} onChange={(event) => setDraft({ ...draft, category: event.target.value })} /></label>
+            <label className="de-field de-template-description"><span>适用范围</span><textarea className="ws-textarea" value={draft.description} onChange={(event) => setDraft({ ...draft, description: event.target.value })} /></label>
+            <label className="de-template-switch"><input type="checkbox" checked={draft.enabled} onChange={(event) => setDraft({ ...draft, enabled: event.target.checked })} /><span><strong>允许用于新任务</strong><small>停用后历史结果不受影响，但抽取页不能再选择</small></span></label>
+            <label className="de-field de-template-config"><span>抽取结构与参数（JSON）</span><textarea className="ws-textarea" value={configText} onChange={(event) => setConfigText(event.target.value)} spellCheck={false} /></label>
+          </div>
+          {message ? <div className={message.error ? 'de-template-message de-template-message--error' : 'de-template-message'}>{message.error ? <AlertCircle size={14} /> : <CheckCircle2 size={14} />}{message.text}</div> : null}
+        </>}
+      </main>
+    </div>
+  );
+}
+
 function ExtractionView({ settings }: { settings: LLMSettings | null }) {
   const inputRef = useRef<HTMLInputElement>(null);
-  const [scenario, setScenario] = useState<Record<string, unknown> | null>(null);
-  const [configText, setConfigText] = useState('');
+  const [templates, setTemplates] = useState<ScenarioTemplate[]>([]);
+  const [selectedScenarioIds, setSelectedScenarioIds] = useState<string[]>([]);
   const [files, setFiles] = useState<File[]>([]);
   const [method, setMethod] = useState<'llm' | 'regex'>('llm');
-  const [busy, setBusy] = useState(false);
+  const [activeJobId, setActiveJobId] = useState<string | null>(() => readRememberedActiveJob());
+  const [busy, setBusy] = useState(() => Boolean(readRememberedActiveJob()));
   const [error, setError] = useState('');
   const [payload, setPayload] = useState<ExtractionPayload | null>(null);
   const [progress, setProgress] = useState<JobProgress | null>(null);
-  const [activeJobId, setActiveJobId] = useState<string | null>(null);
   const [previewTab, setPreviewTab] = useState<PreviewTab>('graph');
+  const [resultScenarioId, setResultScenarioId] = useState('all');
   const [selectedDocument, setSelectedDocument] = useState(0);
   const [dragging, setDragging] = useState(false);
 
   useEffect(() => {
-    apiRequest<Record<string, unknown>>('/api/scenarios/procurement-compliance')
-      .then((data) => {
-        setScenario(data);
-        setConfigText(JSON.stringify(data, null, 2));
-        setMethod(data.method === 'regex' ? 'regex' : 'llm');
+    apiRequest<{ templates: ScenarioTemplate[] }>('/api/scenarios?enabled_only=true')
+      .then(({ templates: available }) => {
+        setTemplates(available);
+        const initial = available.find((item) => item.id === 'procurement-compliance') || available[0];
+        if (initial) setSelectedScenarioIds([initial.id]);
       })
       .catch((reason: unknown) => setError(reason instanceof Error ? reason.message : String(reason)));
   }, []);
 
   useEffect(() => {
     let cancelled = false;
-    let savedJobId: string | null = null;
-    try {
-      savedJobId = window.localStorage.getItem(ACTIVE_JOB_STORAGE_KEY);
-    } catch {
-      savedJobId = null;
-    }
-    if (savedJobId) {
-      setBusy(true);
-      setActiveJobId(savedJobId);
-      return () => { cancelled = true; };
-    }
+    if (activeJobId) return () => { cancelled = true; };
     apiRequest<{ jobs: JobProgress[] }>('/api/extraction-jobs/active')
       .then(({ jobs }) => {
         if (cancelled || !jobs.length) return;
@@ -500,7 +701,7 @@ function ExtractionView({ settings }: { settings: LLMSettings | null }) {
       })
       .catch(() => undefined);
     return () => { cancelled = true; };
-  }, []);
+  }, [activeJobId]);
 
   useEffect(() => {
     if (!activeJobId) return undefined;
@@ -572,20 +773,20 @@ function ExtractionView({ settings }: { settings: LLMSettings | null }) {
       setError('Kimi K3 API Key 尚未配置，请先打开“模型配置”保存密钥');
       return;
     }
+    if (!selectedScenarioIds.length) {
+      setError('请至少选择一个场景模板');
+      return;
+    }
     setBusy(true);
     setError('');
     setPayload(null);
     setProgress(null);
+    setResultScenarioId('all');
     try {
-      const config = JSON.parse(configText) as Record<string, unknown>;
-      config.method = method;
-      config.provider = 'kimi';
-      config.model = settings?.model || 'kimi-k3';
-      config.base_url = settings?.base_url || 'https://api.moonshot.cn/v1';
-      delete config.api_key;
       const formData = new FormData();
       files.forEach((file) => formData.append('files', file));
-      formData.append('config_json', JSON.stringify(config));
+      formData.append('scenario_ids_json', JSON.stringify(selectedScenarioIds));
+      formData.append('method', method);
       const submitted = await apiRequest<BatchSubmission>('/api/extractions/batch', { method: 'POST', body: formData });
       setProgress(submitted.progress);
       rememberActiveJob(submitted.job_id);
@@ -597,7 +798,15 @@ function ExtractionView({ settings }: { settings: LLMSettings | null }) {
   }
 
   const result = payload?.result;
-  const entityById = useMemo(() => Object.fromEntries((result?.entities || []).map((entity) => [entity.id, entity])), [result]);
+  const visibleEntities = useMemo(
+    () => (result?.entities || []).filter((entity) => resultScenarioId === 'all' || entity.metadata?.scenario_refs?.some((item) => item.id === resultScenarioId)),
+    [result, resultScenarioId],
+  );
+  const visibleRelationships = useMemo(
+    () => (result?.relationships || []).filter((relationship) => resultScenarioId === 'all' || relationship.metadata?.scenario_refs?.some((item) => item.id === resultScenarioId)),
+    [result, resultScenarioId],
+  );
+  const entityById = useMemo(() => Object.fromEntries(visibleEntities.map((entity) => [entity.id, entity])), [visibleEntities]);
 
   return (
     <div className="de-page">
@@ -651,6 +860,35 @@ function ExtractionView({ settings }: { settings: LLMSettings | null }) {
 
           <div className="de-step-card">
             <span className="de-step-number">02</span>
+            <div className="de-step-title">选择场景模板 <small>可多选</small></div>
+            <div className="de-extraction-templates">
+              {templates.map((template) => {
+                const active = selectedScenarioIds.includes(template.id);
+                const entities = Array.isArray(template.config.entity_types) ? template.config.entity_types.length : 0;
+                const relationships = Array.isArray(template.config.relation_types) ? template.config.relation_types.length : 0;
+                return <button key={template.id} data-active={active} onClick={() => {
+                  setError('');
+                  setSelectedScenarioIds((current) => {
+                    if (active) return current.filter((id) => id !== template.id);
+                    if (current.length >= 8) {
+                      setError('一次最多选择 8 个场景模板');
+                      return current;
+                    }
+                    return [...current, template.id];
+                  });
+                }}>
+                  <span>{active ? <CheckCircle2 size={13} /> : <Layers3 size={13} />}</span>
+                  <strong>{template.name}</strong>
+                  <small>{entities} 类实体 · {relationships} 类关系</small>
+                </button>;
+              })}
+              {!templates.length ? <div className="de-template-loading"><LoaderCircle className="ws-spin" size={13} />正在加载可用模板</div> : null}
+            </div>
+            <div className="de-template-selection-summary">已选择 {selectedScenarioIds.length} 个模板，将执行 {files.length * selectedScenarioIds.length} 个“文档 × 模板”任务</div>
+          </div>
+
+          <div className="de-step-card">
+            <span className="de-step-number">03</span>
             <div className="de-step-title">选择抽取方式</div>
             <div className="de-method-picker">
               <button data-active={method === 'llm'} onClick={() => setMethod('llm')}><Sparkles size={14} /><span><strong>Kimi K3</strong><small>理解自然语言</small></span></button>
@@ -662,19 +900,13 @@ function ExtractionView({ settings }: { settings: LLMSettings | null }) {
               </div>
             ) : null}
           </div>
-
-          <details className="de-config-details">
-            <summary><span><span className="de-step-number">03</span>场景约束</span><span>高级</span></summary>
-            <p>实体类型和关系类型会约束模型输出；这里不会保存 API Key。</p>
-            <textarea className="ws-textarea" value={configText} onChange={(event) => setConfigText(event.target.value)} spellCheck={false} />
-          </details>
         </div>
 
         <div className="de-run-area">
           {error ? <div className="de-run-error"><AlertCircle size={14} />{error}</div> : null}
-          <button className="ws-btn ws-btn--primary de-run-button" disabled={busy || !scenario} onClick={() => void runExtraction()}>
+          <button className="ws-btn ws-btn--primary de-run-button" disabled={busy || !templates.length || !selectedScenarioIds.length} onClick={() => void runExtraction()}>
             {busy ? <LoaderCircle className="ws-spin" size={16} /> : <Sparkles size={16} />}
-            {busy ? `正在处理 ${progress?.total || files.length} 个文件…` : `开始抽取${files.length > 1 ? `（${files.length} 个文件）` : ''}`}
+            {busy ? `正在处理 ${progress?.total || files.length * selectedScenarioIds.length} 个任务…` : `开始抽取${selectedScenarioIds.length > 1 ? `（${selectedScenarioIds.length} 个场景）` : ''}`}
           </button>
         </div>
       </aside>
@@ -710,12 +942,23 @@ function ExtractionView({ settings }: { settings: LLMSettings | null }) {
               <div><strong>{result.statistics.documents_failed || 0}</strong><span>失败文档</span></div>
             </div>
 
+            {result.scenarios?.length ? (
+              <div className="de-result-scenarios">
+                <button data-active={resultScenarioId === 'all'} onClick={() => setResultScenarioId('all')}><Layers3 size={13} /><span><strong>合并结果</strong><small>{result.entities.length} 实体 · {result.relationships.length} 关系</small></span></button>
+                {result.scenarios.map((scenario) => (
+                  <button key={scenario.id} data-active={resultScenarioId === scenario.id} onClick={() => setResultScenarioId(scenario.id)}>
+                    <BookCopy size={13} /><span><strong>{scenario.name}</strong><small>{scenario.entities} 实体 · {scenario.relationships} 关系 · v{scenario.version}</small></span>
+                  </button>
+                ))}
+              </div>
+            ) : null}
+
             {payload.items?.length ? (
               <div className="de-batch-status">
                 {payload.items.map((item) => (
-                  <div key={`${item.index}-${item.source_name}`} data-status={item.status}>
+                  <div key={`${item.index}-${item.source_name}-${item.scenario_id}`} data-status={item.status}>
                     {item.status === 'completed' ? <CheckCircle2 size={13} /> : <AlertCircle size={13} />}
-                    <span>{item.source_name}</span>
+                    <span>{item.source_name}<em>{item.scenario_name}</em></span>
                     <small>{item.status === 'completed' ? `${item.statistics?.entities || 0} 实体 · ${item.statistics?.relationships || 0} 关系` : item.error}</small>
                   </div>
                 ))}
@@ -726,27 +969,27 @@ function ExtractionView({ settings }: { settings: LLMSettings | null }) {
               {([
                 ['graph', '图谱预览'],
                 ['text', '原文预览'],
-                ['entities', `实体 ${result.entities.length}`],
-                ['relationships', `关系 ${result.relationships.length}`],
+                ['entities', `实体 ${visibleEntities.length}`],
+                ['relationships', `关系 ${visibleRelationships.length}`],
               ] as Array<[PreviewTab, string]>).map(([id, label]) => (
                 <button key={id} data-active={previewTab === id} onClick={() => setPreviewTab(id)}>{label}</button>
               ))}
             </div>
 
             <div className="de-preview-content">
-              {previewTab === 'graph' ? <GraphPreview entities={result.entities} relationships={result.relationships} /> : null}
+              {previewTab === 'graph' ? <GraphPreview entities={visibleEntities} relationships={visibleRelationships} /> : null}
               {previewTab === 'text' ? <div className="de-document-preview">
-                {result.documents.length > 1 ? <div className="de-document-tabs">{result.documents.map((document, index) => <button key={document.name} data-active={selectedDocument === index} onClick={() => setSelectedDocument(index)}>{document.name}</button>)}</div> : null}
+                {result.documents.length > 1 ? <div className="de-document-tabs">{result.documents.map((document, index) => <button key={document.id || `${document.name}-${index}`} data-active={selectedDocument === index} onClick={() => setSelectedDocument(index)}>{document.name}</button>)}</div> : null}
                 <pre className="de-text-preview">{result.documents[selectedDocument]?.text_preview || '没有可预览的文本'}</pre>
               </div> : null}
               {previewTab === 'entities' ? (
-                <div className="de-table-wrap"><table><thead><tr><th>类型</th><th>实体</th><th>置信度</th><th>原文证据</th></tr></thead><tbody>
-                  {result.entities.map((entity) => <tr key={entity.id}><td><span className="ws-pill ws-pill--accent">{entity.type}</span></td><td>{entity.text}</td><td className="mono">{confidence(entity.confidence)}</td><td className="de-evidence">{evidence(entity.metadata)}</td></tr>)}
+                <div className="de-table-wrap"><table><thead><tr><th>类型</th><th>实体</th><th>来源模板</th><th>置信度</th><th>原文证据</th></tr></thead><tbody>
+                  {visibleEntities.map((entity) => <tr key={entity.id}><td><span className="ws-pill ws-pill--accent">{entity.type}</span></td><td>{entity.text}</td><td className="de-scenario-source">{scenarioNames(entity.metadata)}</td><td className="mono">{confidence(entity.confidence)}</td><td className="de-evidence">{evidence(entity.metadata)}</td></tr>)}
                 </tbody></table></div>
               ) : null}
               {previewTab === 'relationships' ? (
-                <div className="de-table-wrap"><table><thead><tr><th>起点</th><th>关系</th><th>终点</th><th>置信度</th><th>原文证据</th></tr></thead><tbody>
-                  {result.relationships.map((relation) => <tr key={relation.id}><td>{entityById[relation.source]?.text || relation.source}</td><td><span className="ws-pill ws-pill--purple">{relation.type}</span></td><td>{entityById[relation.target]?.text || relation.target}</td><td className="mono">{confidence(relation.metadata?.confidence ?? relation.weight)}</td><td className="de-evidence">{evidence(relation.metadata)}</td></tr>)}
+                <div className="de-table-wrap"><table><thead><tr><th>起点</th><th>关系</th><th>终点</th><th>来源模板</th><th>置信度</th><th>原文证据</th></tr></thead><tbody>
+                  {visibleRelationships.map((relation) => <tr key={relation.id}><td>{entityById[relation.source]?.text || relation.source}</td><td><span className="ws-pill ws-pill--purple">{relation.type}</span></td><td>{entityById[relation.target]?.text || relation.target}</td><td className="de-scenario-source">{scenarioNames(relation.metadata)}</td><td className="mono">{confidence(relation.metadata?.confidence ?? relation.weight)}</td><td className="de-evidence">{evidence(relation.metadata)}</td></tr>)}
                 </tbody></table></div>
               ) : null}
             </div>
@@ -773,7 +1016,13 @@ export function DocumentExtractionWorkspace({ view }: { view: View }) {
     return <div className="ws-empty"><AlertCircle className="ws-empty-icon" size={30} /><div className="ws-empty-title">文档抽取服务暂不可用</div><div className="ws-empty-body">{settingsError}<br />请确认 9004 端口的服务已经启动。</div></div>;
   }
 
+  if (view === 'settings' && !settings) {
+    return <div className="ws-empty"><LoaderCircle className="ws-spin ws-empty-icon" size={30} /><div className="ws-empty-title">正在读取模型配置</div></div>;
+  }
+
   return view === 'settings'
-    ? <SettingsView settings={settings} onSettingsChanged={setSettings} />
-    : <ExtractionView settings={settings} />;
+    ? <SettingsView settings={settings as LLMSettings} onSettingsChanged={setSettings} />
+    : view === 'templates'
+      ? <TemplateCenter />
+      : <ExtractionView settings={settings} />;
 }

@@ -1,13 +1,14 @@
 from __future__ import annotations
 
 import asyncio
+import functools
 import json
 import os
 import urllib.error
 import urllib.request
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any
+from typing import Any, List, Optional
 
 from dotenv import load_dotenv
 from fastapi import BackgroundTasks, FastAPI, File, Form, HTTPException, UploadFile
@@ -16,10 +17,11 @@ from fastapi.responses import FileResponse, HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import SecretStr
 
-from .batch import combine_results
+from .batch import combine_results, tag_result_scenario
 from .document_loader import SUPPORTED_SUFFIXES
 from .extractor import DocumentExtractionService
-from .models import ExtractionConfig, LLMSettingsUpdate
+from .models import ExtractionConfig, LLMSettingsUpdate, ScenarioTemplateWrite
+from .scenario_store import ScenarioStore
 from .settings_store import LLMSettingsStore
 from .storage import JobStore
 
@@ -34,6 +36,7 @@ SETTINGS_DB = Path(os.getenv("DOCUMENT_EXTRACT_SETTINGS_DB", JOB_ROOT.parent / "
 SETTINGS_KEY = Path(os.getenv("DOCUMENT_EXTRACT_SETTINGS_KEY_FILE", SETTINGS_DB.with_name(".settings.key")))
 MAX_UPLOAD_BYTES = int(os.getenv("DOCUMENT_EXTRACT_MAX_UPLOAD_BYTES", str(25 * 1024 * 1024)))
 MAX_BATCH_FILES = int(os.getenv("DOCUMENT_EXTRACT_MAX_BATCH_FILES", "20"))
+MAX_SCENARIO_TEMPLATES = int(os.getenv("DOCUMENT_EXTRACT_MAX_SCENARIO_TEMPLATES", "8"))
 ALLOWED_ORIGINS = [
     value.strip()
     for value in os.getenv(
@@ -48,13 +51,14 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=ALLOWED_ORIGINS,
     allow_credentials=False,
-    allow_methods=["GET", "POST", "PUT", "OPTIONS"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["Content-Type"],
 )
 app.mount("/static", StaticFiles(directory=STATIC_ROOT), name="static")
 
 store = JobStore(JOB_ROOT)
 settings_store = LLMSettingsStore(SETTINGS_DB, SETTINGS_KEY)
+scenario_store = ScenarioStore(SETTINGS_DB, SCENARIO_ROOT)
 service = DocumentExtractionService()
 store.recover_incomplete_jobs()
 
@@ -75,6 +79,16 @@ _STAGE_PROGRESS = {
 
 def _utc_now() -> str:
     return datetime.now(timezone.utc).isoformat()
+
+
+async def _to_thread(function: Any, *args: Any) -> Any:
+    """Run blocking extraction work without requiring Python 3.9's asyncio.to_thread."""
+
+    native = getattr(asyncio, "to_thread", None)
+    if native is not None:
+        return await native(function, *args)
+    loop = asyncio.get_running_loop()
+    return await loop.run_in_executor(None, functools.partial(function, *args))
 
 
 def _update_progress(status: dict[str, Any]) -> None:
@@ -104,6 +118,7 @@ def _update_progress(status: dict[str, Any]) -> None:
             "percent": 100 if total and len(completed_items) == total else round(progress_units / max(total, 1) * 100),
             "current_index": current.get("index") if current else None,
             "current_file": current.get("source_name") if current else None,
+            "current_scenario": current.get("scenario_name") if current else None,
             "current_stage": current.get("stage") if current else None,
             "updated_at": _utc_now(),
         }
@@ -131,8 +146,7 @@ def _public_progress(status: dict[str, Any]) -> dict[str, Any]:
 
 async def _run_batch_extraction(
     job_id: str,
-    prepared_files: list[tuple[int, str, Path]],
-    config: ExtractionConfig,
+    prepared_tasks: list[tuple[int, str, Path, dict[str, Any], ExtractionConfig]],
 ) -> None:
     status = store.load_status(job_id)
     completed_results: list[tuple[str, dict[str, Any]]] = []
@@ -141,7 +155,7 @@ async def _run_batch_extraction(
         _update_progress(status)
         store.save_status(job_id, status)
 
-        for index, source_name, source_path in prepared_files:
+        for index, source_name, source_path, scenario, config in prepared_tasks:
             item = next(candidate for candidate in status["items"] if candidate["index"] == index)
             item.update(
                 {
@@ -164,13 +178,14 @@ async def _run_batch_extraction(
                 store.save_status(job_id, status)
 
             try:
-                result = await asyncio.to_thread(
+                result = await _to_thread(
                     service.extract,
                     source_path,
                     source_name,
                     config,
                     report_file_progress,
                 )
+                tag_result_scenario(result, scenario)
                 completed_results.append((source_name, result))
                 item.update(
                     {
@@ -261,6 +276,72 @@ def _apply_saved_llm_settings(config: ExtractionConfig) -> ExtractionConfig:
     )
 
 
+def _parse_scenario_ids(raw_value: str) -> list[str]:
+    try:
+        values = json.loads(raw_value)
+    except (TypeError, json.JSONDecodeError) as exc:
+        raise HTTPException(status_code=422, detail="场景模板列表不是有效的 JSON") from exc
+    if not isinstance(values, list):
+        raise HTTPException(status_code=422, detail="场景模板列表必须是数组")
+    scenario_ids = list(dict.fromkeys(str(value).strip() for value in values if str(value).strip()))
+    if not scenario_ids:
+        raise HTTPException(status_code=422, detail="请至少选择一个场景模板")
+    if len(scenario_ids) > MAX_SCENARIO_TEMPLATES:
+        raise HTTPException(
+            status_code=422,
+            detail=f"一次最多选择 {MAX_SCENARIO_TEMPLATES} 个场景模板",
+        )
+    return scenario_ids
+
+
+def _resolve_scenario_configs(
+    *,
+    scenario_ids_json: str | None,
+    config_json: str | None,
+    method: str | None,
+) -> list[tuple[dict[str, Any], ExtractionConfig]]:
+    if method is not None and method not in {"llm", "regex", "ml"}:
+        raise HTTPException(status_code=422, detail="抽取方式只支持 llm、regex 或 ml")
+
+    templates: list[dict[str, Any]] = []
+    if scenario_ids_json:
+        try:
+            templates = scenario_store.get_many(
+                _parse_scenario_ids(scenario_ids_json),
+                require_enabled=True,
+            )
+        except KeyError as exc:
+            raise HTTPException(status_code=404, detail=f"场景模板不存在：{exc.args[0]}") from exc
+        except ValueError as exc:
+            raise HTTPException(status_code=422, detail=str(exc)) from exc
+    elif config_json:
+        legacy_config = _parse_config(config_json)
+        templates = [
+            {
+                "id": "legacy-inline-config",
+                "name": legacy_config.scenario_name,
+                "version": 1,
+                "config": legacy_config.model_dump(exclude={"api_key"}),
+            }
+        ]
+    else:
+        raise HTTPException(status_code=422, detail="请至少选择一个场景模板")
+
+    resolved: list[tuple[dict[str, Any], ExtractionConfig]] = []
+    for template in templates:
+        config = ExtractionConfig.model_validate(template["config"])
+        if method:
+            config = config.model_copy(update={"method": method})
+        config = _apply_saved_llm_settings(config)
+        snapshot = {
+            "id": template["id"],
+            "name": template["name"],
+            "version": int(template["version"]),
+        }
+        resolved.append((snapshot, config))
+    return resolved
+
+
 def _test_llm_connection(config: ExtractionConfig | None = None) -> dict[str, Any]:
     runtime = settings_store.runtime_settings()
     api_key = (
@@ -308,7 +389,7 @@ async def _ensure_llm_connection(config: ExtractionConfig) -> None:
     if config.method != "llm":
         return
     try:
-        await asyncio.to_thread(_test_llm_connection, config)
+        await _to_thread(_test_llm_connection, config)
     except RuntimeError as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc
 
@@ -325,6 +406,7 @@ async def health() -> dict:
         "module": "document-extraction",
         "supported_formats": sorted(SUPPORTED_SUFFIXES),
         "llm": settings_store.public_settings(),
+        "scenario_templates": len(scenario_store.list(enabled_only=True)),
     }
 
 
@@ -349,15 +431,54 @@ async def update_llm_settings(payload: LLMSettingsUpdate) -> dict:
 @app.post("/api/settings/llm/test")
 async def test_llm_settings() -> dict:
     try:
-        return await asyncio.to_thread(_test_llm_connection)
+        return await _to_thread(_test_llm_connection)
     except RuntimeError as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc
 
 
-@app.get("/api/scenarios/procurement-compliance")
-async def procurement_scenario() -> dict:
-    path = SCENARIO_ROOT / "procurement-compliance.json"
-    return json.loads(path.read_text(encoding="utf-8"))
+@app.get("/api/scenarios")
+async def list_scenarios(enabled_only: bool = False) -> dict:
+    templates = scenario_store.list(enabled_only=enabled_only)
+    return {"templates": templates, "total": len(templates)}
+
+
+@app.post("/api/scenarios", status_code=201)
+async def create_scenario(payload: ScenarioTemplateWrite) -> dict:
+    return scenario_store.create(payload)
+
+
+@app.get("/api/scenarios/{scenario_id}")
+async def get_scenario(scenario_id: str) -> dict:
+    try:
+        return scenario_store.get(scenario_id)
+    except KeyError as exc:
+        raise HTTPException(status_code=404, detail="场景模板不存在") from exc
+
+
+@app.put("/api/scenarios/{scenario_id}")
+async def update_scenario(scenario_id: str, payload: ScenarioTemplateWrite) -> dict:
+    try:
+        return scenario_store.update(scenario_id, payload)
+    except KeyError as exc:
+        raise HTTPException(status_code=404, detail="场景模板不存在") from exc
+
+
+@app.post("/api/scenarios/{scenario_id}/duplicate", status_code=201)
+async def duplicate_scenario(scenario_id: str) -> dict:
+    try:
+        return scenario_store.duplicate(scenario_id)
+    except KeyError as exc:
+        raise HTTPException(status_code=404, detail="场景模板不存在") from exc
+
+
+@app.delete("/api/scenarios/{scenario_id}", status_code=204)
+async def delete_scenario(scenario_id: str) -> None:
+    try:
+        scenario_store.delete(scenario_id)
+    except KeyError as exc:
+        raise HTTPException(status_code=404, detail="场景模板不存在") from exc
+    except PermissionError as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
 
 
 @app.post("/api/extractions")
@@ -385,7 +506,7 @@ async def create_extraction(
     source_path.write_bytes(content)
 
     try:
-        result = await asyncio.to_thread(service.extract, source_path, source_name, config)
+        result = await _to_thread(service.extract, source_path, source_name, config)
         result["job_id"] = job_id
         store.save_result(job_id, result)
     except Exception as exc:
@@ -397,48 +518,75 @@ async def create_extraction(
 @app.post("/api/extractions/batch", status_code=202)
 async def create_batch_extraction(
     background_tasks: BackgroundTasks,
-    files: list[UploadFile] = File(...),
-    config_json: str = Form(...),
+    files: List[UploadFile] = File(...),
+    config_json: Optional[str] = Form(None),
+    scenario_ids_json: Optional[str] = Form(None),
+    method: Optional[str] = Form(None),
 ) -> dict:
     if not files:
         raise HTTPException(status_code=422, detail="请至少上传一个文件")
     if len(files) > MAX_BATCH_FILES:
         raise HTTPException(status_code=422, detail=f"一次最多上传 {MAX_BATCH_FILES} 个文件")
 
-    config = _apply_saved_llm_settings(_parse_config(config_json))
-    await _ensure_llm_connection(config)
+    scenario_configs = _resolve_scenario_configs(
+        scenario_ids_json=scenario_ids_json,
+        config_json=config_json,
+        method=method,
+    )
+    llm_config = next((config for _, config in scenario_configs if config.method == "llm"), None)
+    if llm_config is not None:
+        await _ensure_llm_connection(llm_config)
     job_id, job_path = store.create()
     source_root = job_path / "sources"
     source_root.mkdir(parents=True, exist_ok=True)
     items: list[dict[str, Any]] = []
-    prepared_files: list[tuple[int, str, Path]] = []
+    prepared_tasks: list[tuple[int, str, Path, dict[str, Any], ExtractionConfig]] = []
+    file_records: list[tuple[int, str, Path | None, str | None]] = []
 
-    for index, upload in enumerate(files, start=1):
-        source_name = Path(upload.filename or f"document-{index}.txt").name
+    for file_index, upload in enumerate(files, start=1):
+        source_name = Path(upload.filename or f"document-{file_index}.txt").name
         suffix = Path(source_name).suffix.lower()
-        item: dict[str, Any] = {"index": index, "source_name": source_name, "status": "queued"}
+        source_path: Path | None = None
+        file_error: str | None = None
         try:
             if suffix not in SUPPORTED_SUFFIXES:
                 raise ValueError(f"不支持的文件格式：{suffix or '无扩展名'}")
             content = await upload.read(MAX_UPLOAD_BYTES + 1)
             if len(content) > MAX_UPLOAD_BYTES:
                 raise ValueError(f"文件超过 {MAX_UPLOAD_BYTES // (1024 * 1024)} MB 限制")
-            source_path = source_root / f"source-{index:03d}{suffix}"
+            source_path = source_root / f"source-{file_index:03d}{suffix}"
             source_path.write_bytes(content)
-            prepared_files.append((index, source_name, source_path))
         except Exception as exc:
-            item.update(
-                {
-                    "status": "failed",
-                    "error": service._safe_error(exc),
-                    "completed_at": _utc_now(),
-                }
-            )
+            file_error = service._safe_error(exc)
         finally:
             await upload.close()
-        items.append(item)
+        file_records.append((file_index, source_name, source_path, file_error))
+
+    task_index = 0
+    for file_index, source_name, source_path, file_error in file_records:
+        for scenario, config in scenario_configs:
+            task_index += 1
+            item: dict[str, Any] = {
+                "index": task_index,
+                "file_index": file_index,
+                "source_name": source_name,
+                "scenario_id": scenario["id"],
+                "scenario_name": scenario["name"],
+                "scenario_version": scenario["version"],
+                "status": "failed" if file_error else "queued",
+            }
+            if file_error:
+                item.update({"error": file_error, "completed_at": _utc_now()})
+            elif source_path is not None:
+                prepared_tasks.append((task_index, source_name, source_path, scenario, config))
+            items.append(item)
 
     now = _utc_now()
+    selected_method = method or scenario_configs[0][1].method
+    selected_model = next(
+        (config.model for _, config in scenario_configs if config.method == "llm"),
+        None,
+    )
     status: dict[str, Any] = {
         "job_id": job_id,
         "status": "queued",
@@ -450,17 +598,19 @@ async def create_batch_extraction(
         "percent": 0,
         "current_index": None,
         "current_file": None,
+        "current_scenario": None,
         "started_at": now,
         "updated_at": now,
         "completed_at": None,
         "result_ready": False,
-        "method": config.method,
-        "model": config.model if config.method == "llm" else None,
+        "method": selected_method,
+        "model": selected_model,
+        "scenarios": [scenario for scenario, _ in scenario_configs],
         "items": items,
     }
     _update_progress(status)
     store.save_status(job_id, status)
-    background_tasks.add_task(_run_batch_extraction, job_id, prepared_files, config)
+    background_tasks.add_task(_run_batch_extraction, job_id, prepared_tasks)
     return {
         "job_id": job_id,
         "status": "queued",

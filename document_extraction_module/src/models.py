@@ -75,6 +75,28 @@ class ExtractionConfig(BaseModel):
         return self
 
 
+class ScenarioTemplateWrite(BaseModel):
+    """Editable product metadata plus the executable extraction configuration."""
+
+    name: str = Field(min_length=1, max_length=100)
+    description: str = Field(default="", max_length=1000)
+    category: str = Field(default="通用", min_length=1, max_length=80)
+    enabled: bool = True
+    config: ExtractionConfig
+
+    @model_validator(mode="after")
+    def align_scenario_name(self) -> "ScenarioTemplateWrite":
+        self.name = self.name.strip()
+        self.description = self.description.strip()
+        self.category = self.category.strip()
+        if not self.name:
+            raise ValueError("模板名称不能为空")
+        if not self.category:
+            raise ValueError("模板分类不能为空")
+        self.config = self.config.model_copy(update={"scenario_name": self.name})
+        return self
+
+
 class LLMSettingsUpdate(BaseModel):
     provider: Literal["kimi"] = "kimi"
     display_name: str = Field(default="Kimi K3", min_length=1, max_length=80)

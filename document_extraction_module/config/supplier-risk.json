@@ -1,0 +1,27 @@
+{
+  "scenario_name": "供应商风险画像",
+  "method": "llm",
+  "provider": "kimi",
+  "model": "kimi-k3",
+  "base_url": "https://api.moonshot.cn/v1",
+  "entity_confidence": 0.55,
+  "relation_confidence": 0.55,
+  "chunk_size": 5000,
+  "chunk_overlap": 300,
+  "extract_temporal_bounds": true,
+  "entity_types": [
+    {"name": "ORGANIZATION", "label": "机构", "description": "供应商、关联企业、监管机构或采购单位", "aliases": ["供应商", "公司", "机构"], "patterns": ["[^\\n，。；]{2,50}(?:股份有限公司|有限公司|集团|公司|中心|研究院)"]},
+    {"name": "PERSON", "label": "关联人员", "description": "股东、法定代表人、实际控制人、董监高或业务联系人", "aliases": ["股东", "法人", "实控人"], "patterns": ["(?:股东|法定代表人|实际控制人)[：:]?\\s*([\\u4e00-\\u9fff·]{2,8})"]},
+    {"name": "RISK", "label": "风险事项", "description": "围标串标、利益冲突、失信、经营异常、重大诉讼等风险", "aliases": ["风险", "异常"], "patterns": ["(?:围标串标|利益冲突|经营异常|失信|重大诉讼|关联关系未披露)(?:风险)?"]},
+    {"name": "PENALTY", "label": "处罚记录", "description": "行政处罚、市场禁入、罚款或纪律处分记录", "aliases": ["处罚", "处分"], "patterns": ["(?:行政处罚|市场禁入|罚款|纪律处分)[^。；\\n]{0,100}"]},
+    {"name": "BLACKLIST", "label": "名单", "description": "黑名单、禁入名单、失信被执行人名单或观察名单", "aliases": ["黑名单", "禁入名单"], "patterns": ["(?:供应商)?(?:黑名单|禁入名单|失信被执行人名单|观察名单)"]},
+    {"name": "DATE", "label": "日期", "description": "风险发生、处罚决定、名单生效或失效日期", "aliases": ["时间"], "patterns": ["(?:20\\d{2})[年/-](?:1[0-2]|0?[1-9])[月/-](?:3[01]|[12]\\d|0?[1-9])日?"]}
+  ],
+  "relation_types": [
+    {"name": "SHAREHOLDER_OF", "label": "持股关联", "description": "人员或机构持有供应商股权", "patterns": ["(?P<subject>[\\u4e00-\\u9fff·]{2,8})是(?P<object>[^，。；\\n]{2,50}(?:股份有限公司|有限公司|集团|公司))的股东"]},
+    {"name": "CONTROLS", "label": "控制关系", "description": "人员或机构实际控制另一机构", "patterns": []},
+    {"name": "HAS_RISK", "label": "存在风险", "description": "供应商或关联方存在某项风险事项", "patterns": []},
+    {"name": "RECEIVED_PENALTY", "label": "受到处罚", "description": "供应商或关联方受到某项处罚", "patterns": []},
+    {"name": "LISTED_IN", "label": "列入名单", "description": "供应商或关联方被列入某类名单", "patterns": ["(?P<subject>[^，。；\\n]{2,50}(?:股份有限公司|有限公司|集团|公司))被列入(?P<object>(?:供应商)?(?:黑名单|禁入名单|失信被执行人名单|观察名单))"]}
+  ]
+}

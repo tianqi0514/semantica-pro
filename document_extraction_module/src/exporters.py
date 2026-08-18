@@ -20,8 +20,18 @@ CSV_FIELDS = [
     "valid_from",
     "valid_until",
     "temporal_confidence",
+    "scenario_ids",
+    "scenario_names",
     "evidence",
 ]
+
+
+def _scenario_columns(metadata: dict[str, Any]) -> tuple[str, str]:
+    refs = metadata.get("scenario_refs", []) or []
+    return (
+        "|".join(str(item.get("id", "")) for item in refs if item.get("id")),
+        "|".join(str(item.get("name", "")) for item in refs if item.get("name")),
+    )
 
 
 def to_json_text(result: Dict[str, Any]) -> str:
@@ -37,6 +47,7 @@ def to_csv_text(result: Dict[str, Any]) -> str:
 
     for entity in result.get("entities", []):
         metadata = entity.get("metadata", {}) or {}
+        scenario_ids, scenario_names = _scenario_columns(metadata)
         writer.writerow(
             {
                 "kind": "node",
@@ -46,12 +57,15 @@ def to_csv_text(result: Dict[str, Any]) -> str:
                 "confidence": entity.get("confidence", ""),
                 "source_file": metadata.get("source_file", ""),
                 "document_id": metadata.get("document_id", ""),
+                "scenario_ids": scenario_ids,
+                "scenario_names": scenario_names,
                 "evidence": json.dumps(metadata.get("evidence", []), ensure_ascii=False),
             }
         )
 
     for relation in result.get("relationships", []):
         metadata = relation.get("metadata", {}) or {}
+        scenario_ids, scenario_names = _scenario_columns(metadata)
         writer.writerow(
             {
                 "kind": "edge",
@@ -66,6 +80,8 @@ def to_csv_text(result: Dict[str, Any]) -> str:
                 "valid_from": relation.get("valid_from") or metadata.get("valid_from", ""),
                 "valid_until": relation.get("valid_until") or metadata.get("valid_until", ""),
                 "temporal_confidence": metadata.get("temporal_confidence", ""),
+                "scenario_ids": scenario_ids,
+                "scenario_names": scenario_names,
                 "evidence": json.dumps(metadata.get("evidence", []), ensure_ascii=False),
             }
         )

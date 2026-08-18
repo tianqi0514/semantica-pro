@@ -1,0 +1,28 @@
+{
+  "scenario_name": "合同关键要素",
+  "method": "llm",
+  "provider": "kimi",
+  "model": "kimi-k3",
+  "base_url": "https://api.moonshot.cn/v1",
+  "entity_confidence": 0.55,
+  "relation_confidence": 0.55,
+  "chunk_size": 5000,
+  "chunk_overlap": 300,
+  "extract_temporal_bounds": true,
+  "entity_types": [
+    {"name": "CONTRACT", "label": "合同", "description": "具有明确名称或编号的合同、协议、订单或补充协议", "aliases": ["协议", "订单"], "patterns": ["(?:合同名称|合同编号)[：:]\\s*([^\\n，。；]{2,80})"]},
+    {"name": "ORGANIZATION", "label": "合同主体", "description": "甲方、乙方、采购人、供应商及其他签约机构", "aliases": ["甲方", "乙方", "机构"], "patterns": ["(?:甲方|乙方|采购人|供应商)[：:]\\s*([^\\n，。；]{2,60})"]},
+    {"name": "PERSON", "label": "人员", "description": "法定代表人、联系人、经办人或授权代表", "aliases": ["联系人", "代表"], "patterns": ["(?:联系人|授权代表|法定代表人)[：:]?\\s*([\\u4e00-\\u9fff·]{2,8})"]},
+    {"name": "AMOUNT", "label": "金额", "description": "合同总价、付款金额、保证金或违约金", "aliases": ["金额", "价款"], "patterns": ["(?:人民币)?\\s*[0-9]+(?:\\.[0-9]+)?\\s*(?:万元|亿元|元)"]},
+    {"name": "DATE", "label": "日期", "description": "签订、生效、交付、验收或付款日期", "aliases": ["时间", "期限"], "patterns": ["(?:20\\d{2})[年/-](?:1[0-2]|0?[1-9])[月/-](?:3[01]|[12]\\d|0?[1-9])日?"]},
+    {"name": "CLAUSE", "label": "合同条款", "description": "付款、交付、验收、保密、违约、解除等具有约束力的条款", "aliases": ["条款", "约定"], "patterns": ["(?:付款|交付|验收|保密|违约|解除)(?:条件|方式|责任|条款)?[：:]\\s*([^\\n]{4,160})"]},
+    {"name": "OBLIGATION", "label": "履约义务", "description": "合同主体必须完成的交付、服务、付款或协作义务", "aliases": ["义务", "责任"], "patterns": ["(?:应当|必须|负责)[^。；\\n]{3,100}"]}
+  ],
+  "relation_types": [
+    {"name": "PARTY_TO", "label": "合同主体", "description": "机构或人员是某合同的签约方或参与方", "patterns": []},
+    {"name": "HAS_AMOUNT", "label": "合同金额", "description": "合同或合同主体对应的金额", "patterns": []},
+    {"name": "EFFECTIVE_ON", "label": "生效日期", "description": "合同在某一日期签订或生效", "patterns": []},
+    {"name": "HAS_CLAUSE", "label": "包含条款", "description": "合同包含某项关键条款", "patterns": []},
+    {"name": "RESPONSIBLE_FOR", "label": "承担义务", "description": "合同主体承担某项履约义务", "patterns": []}
+  ]
+}

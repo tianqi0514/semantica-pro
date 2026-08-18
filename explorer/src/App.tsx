@@ -40,7 +40,7 @@ type ExploreView = 'graph' | 'vocabulary';
 type AnalyzeView = 'sparql' | 'reasoning';
 type EnrichView = 'import' | 'merge' | 'registry' | 'resolve';
 type ManageView = 'lineage' | 'kg-overview' | 'ontology';
-type DocumentView = 'extract' | 'settings';
+type DocumentView = 'extract' | 'templates' | 'settings';
 
 type NavItem = {
   id: WorkspaceId;
@@ -1923,6 +1923,9 @@ export default function App() {
             <>
               <button className="workspace-tab" data-active={documentView === 'extract'} onClick={() => setDocumentView('extract')}>
                 文档抽取
+              </button>
+              <button className="workspace-tab" data-active={documentView === 'templates'} onClick={() => setDocumentView('templates')}>
+                场景模板
               </button>
               <button className="workspace-tab" data-active={documentView === 'settings'} onClick={() => setDocumentView('settings')}>
                 模型配置

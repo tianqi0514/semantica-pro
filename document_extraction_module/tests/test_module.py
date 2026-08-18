@@ -7,10 +7,11 @@ import unittest
 from pathlib import Path
 
 from document_extraction_module.src.chunker import split_text
-from document_extraction_module.src.batch import combine_results
+from document_extraction_module.src.batch import combine_results, tag_result_scenario
 from document_extraction_module.src.exporters import to_csv_text
 from document_extraction_module.src.extractor import DocumentExtractionService
-from document_extraction_module.src.models import ExtractionConfig
+from document_extraction_module.src.models import ExtractionConfig, ScenarioTemplateWrite
+from document_extraction_module.src.scenario_store import ScenarioStore
 from document_extraction_module.src.settings_store import LLMSettingsStore
 from document_extraction_module.src.storage import JobStore
 
@@ -143,6 +144,84 @@ class BatchResultTests(unittest.TestCase):
         self.assertEqual(combined["statistics"]["entities"], 1)
         self.assertEqual(combined["entities"][0]["confidence"], 0.9)
         self.assertEqual(combined["entities"][0]["metadata"]["source_files"], ["a.txt", "b.txt"])
+
+    def test_multi_scenario_results_keep_provenance_and_deduplicate(self):
+        base = {
+            "run": {"scenario": "测试", "method": "regex"},
+            "documents": [{"id": "d1", "name": "a.txt"}],
+            "entities": [{"id": "e1", "type": "ORG", "text": "甲公司", "confidence": 0.9, "metadata": {"source_file": "a.txt", "document_id": "d1", "evidence": [{"text": "甲公司"}]}}],
+            "relationships": [],
+            "statistics": {"chunks": 1, "chunks_processed": 1},
+            "warnings": [],
+        }
+        first = tag_result_scenario(json.loads(json.dumps(base)), {"id": "s1", "name": "场景一", "version": 2})
+        second = tag_result_scenario(json.loads(json.dumps(base)), {"id": "s2", "name": "场景二", "version": 3})
+        items = [
+            {"index": 1, "source_name": "a.txt", "scenario_id": "s1", "scenario_name": "场景一", "scenario_version": 2, "status": "completed"},
+            {"index": 2, "source_name": "a.txt", "scenario_id": "s2", "scenario_name": "场景二", "scenario_version": 3, "status": "completed"},
+        ]
+        combined = combine_results([("a.txt", first), ("a.txt", second)], items)
+        self.assertEqual(combined["statistics"]["documents"], 1)
+        self.assertEqual(combined["statistics"]["template_runs"], 2)
+        self.assertEqual(len(combined["entities"]), 1)
+        self.assertEqual(
+            {item["id"] for item in combined["entities"][0]["metadata"]["scenario_refs"]},
+            {"s1", "s2"},
+        )
+        self.assertEqual({item["entities"] for item in combined["scenarios"]}, {1})
+
+    def test_same_name_uploads_are_counted_as_distinct_files(self):
+        result = {
+            "run": {"scenario": "测试", "method": "regex"},
+            "documents": [],
+            "entities": [],
+            "relationships": [],
+            "statistics": {"chunks": 1, "chunks_processed": 1},
+            "warnings": [],
+        }
+        items = [
+            {"index": 1, "file_index": 1, "source_name": "合同.pdf", "status": "completed"},
+            {"index": 2, "file_index": 2, "source_name": "合同.pdf", "status": "completed"},
+        ]
+        combined = combine_results([("合同.pdf", result), ("合同.pdf", result)], items)
+        self.assertEqual(combined["statistics"]["documents"], 2)
+        self.assertEqual(combined["batch"]["files_total"], 2)
+
+
+class ScenarioStoreTests(unittest.TestCase):
+    def test_catalogue_crud_versioning_and_builtin_protection(self):
+        with tempfile.TemporaryDirectory() as directory:
+            database = Path(directory) / "settings.db"
+            store = ScenarioStore(database, ROOT / "config")
+            templates = store.list()
+            self.assertGreaterEqual(len(templates), 3)
+            procurement = store.get("procurement-compliance")
+            self.assertTrue(procurement["built_in"])
+            with self.assertRaises(PermissionError):
+                store.delete(procurement["id"])
+
+            copied = store.duplicate(procurement["id"], name="采购审查自定义版")
+            self.assertFalse(copied["built_in"])
+            self.assertEqual(copied["version"], 1)
+            payload = ScenarioTemplateWrite.model_validate(
+                {
+                    "name": copied["name"],
+                    "description": "更新后的说明",
+                    "category": copied["category"],
+                    "enabled": False,
+                    "config": copied["config"],
+                }
+            )
+            updated = store.update(copied["id"], payload)
+            self.assertEqual(updated["version"], 2)
+            self.assertFalse(updated["enabled"])
+            self.assertEqual(updated["config"]["scenario_name"], copied["name"])
+
+            reopened = ScenarioStore(database, ROOT / "config")
+            self.assertEqual(reopened.get(copied["id"])["version"], 2)
+            reopened.delete(copied["id"])
+            with self.assertRaises(KeyError):
+                reopened.get(copied["id"])
 
 
 class SettingsStoreTests(unittest.TestCase):

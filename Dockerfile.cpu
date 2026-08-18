@@ -1,6 +1,9 @@
 # syntax=docker/dockerfile:1
 FROM node:26-alpine AS frontend-builder
 
+ARG VITE_DOCUMENT_EXTRACTOR_URL=""
+ENV VITE_DOCUMENT_EXTRACTOR_URL=${VITE_DOCUMENT_EXTRACTOR_URL}
+
 WORKDIR /app
 COPY explorer/package*.json ./explorer/
 WORKDIR /app/explorer

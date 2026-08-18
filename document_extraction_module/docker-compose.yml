@@ -1,0 +1,18 @@
+services:
+  document-extractor:
+    build:
+      context: ..
+      dockerfile: document_extraction_module/Dockerfile
+    image: semantica-document-extractor:latest
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      DOCUMENT_EXTRACT_JOB_ROOT: /data/jobs
+      DOCUMENT_EXTRACT_SETTINGS_DB: /data/settings.db
+      DOCUMENT_EXTRACT_SETTINGS_KEY_FILE: /data/.settings.key
+    ports:
+      - "127.0.0.1:9004:9004"
+    volumes:
+      - ./data:/data
+    restart: unless-stopped

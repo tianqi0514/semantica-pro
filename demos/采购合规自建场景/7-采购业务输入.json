@@ -1,0 +1,118 @@
+{
+  "input_note": "这份文件模拟从采购系统、供应商系统和风险系统抽取后的一次业务快照。真实实施可以把 load_json 替换为 SQL 或 API 读取。",
+  "case": {
+    "id": "CASE-2026-001",
+    "title": "数据中心服务器采购",
+    "amount_cny": 2680000,
+    "currency": "CNY",
+    "department_id": "DEPT-IT",
+    "department_name": "信息技术部",
+    "project_id": "PROJECT-DC-2026",
+    "project_name": "2026年数据中心扩容项目"
+  },
+  "suppliers": [
+    {
+      "id": "SUPPLIER-HX",
+      "name": "华星科技有限公司",
+      "risk_level": "high",
+      "risk_reason": "近一年出现重大履约风险记录",
+      "risk_source": "供应商风险平台日快照",
+      "risk_as_of": "2026-08-12",
+      "risk_evidence_id": "EVIDENCE-RISK-HX"
+    },
+    {
+      "id": "SUPPLIER-AY",
+      "name": "安益信息技术有限公司",
+      "risk_level": "normal",
+      "risk_reason": "未发现本演示规则所定义的阻断风险",
+      "risk_source": "供应商风险平台日快照",
+      "risk_as_of": "2026-08-12",
+      "risk_evidence_id": "EVIDENCE-RISK-AY"
+    }
+  ],
+  "evidence": [
+    {
+      "id": "EVIDENCE-BUDGET-001",
+      "type": "budget_approval",
+      "title": "采购预算审批记录",
+      "content": "审批金额2680000元，已通过预算审批。",
+      "source_system": "ERP"
+    },
+    {
+      "id": "EVIDENCE-RISK-HX",
+      "type": "supplier_risk_snapshot",
+      "title": "华星科技风险快照",
+      "content": "2026-08-12风险等级为high，原因：重大履约风险记录。",
+      "source_system": "SupplierRisk"
+    },
+    {
+      "id": "EVIDENCE-RISK-AY",
+      "type": "supplier_risk_snapshot",
+      "title": "安益信息风险快照",
+      "content": "2026-08-12风险等级为normal。",
+      "source_system": "SupplierRisk"
+    }
+  ],
+  "candidate_plans": [
+    {
+      "id": "PLAN-A",
+      "name": "维持原方案",
+      "procurement_method": "invited_tender",
+      "supplier_id": "SUPPLIER-HX",
+      "quoted_price_cny": 2560000,
+      "estimated_delivery_days": 22,
+      "change_description": "不改采购方式，不更换供应商。"
+    },
+    {
+      "id": "PLAN-B",
+      "name": "仅改为公开招标",
+      "procurement_method": "open_tender",
+      "supplier_id": "SUPPLIER-HX",
+      "quoted_price_cny": 2500000,
+      "estimated_delivery_days": 35,
+      "change_description": "改为公开招标，但仍计划选用高风险供应商。"
+    },
+    {
+      "id": "PLAN-C",
+      "name": "公开招标并更换供应商",
+      "procurement_method": "open_tender",
+      "supplier_id": "SUPPLIER-AY",
+      "quoted_price_cny": 2580000,
+      "estimated_delivery_days": 38,
+      "change_description": "改为公开招标，并选用风险等级正常的候选供应商。"
+    },
+    {
+      "id": "PLAN-D",
+      "name": "仅更换供应商",
+      "procurement_method": "invited_tender",
+      "supplier_id": "SUPPLIER-AY",
+      "quoted_price_cny": 2480000,
+      "estimated_delivery_days": 20,
+      "change_description": "更换为风险等级正常的供应商，但仍使用邀请招标。"
+    }
+  ],
+  "historical_decisions": [
+    {
+      "category": "procurement_compliance",
+      "scenario": "采购 合规 审查 金额 2300000 公开招标 供应商 正常",
+      "reasoning": "金额超过企业公开招标阈值，供应商风险等级正常。",
+      "outcome": "通过：采用公开招标",
+      "confidence": 0.9,
+      "entities": [
+        "HIST-CASE-001",
+        "HIST-SUPPLIER-001"
+      ]
+    },
+    {
+      "category": "procurement_compliance",
+      "scenario": "采购 合规 审查 金额 3100000 邀请招标 供应商 高风险",
+      "reasoning": "采购方式和供应商风险均未通过当时的内控复核。",
+      "outcome": "驳回：调整采购方式并重选供应商",
+      "confidence": 0.95,
+      "entities": [
+        "HIST-CASE-002",
+        "HIST-SUPPLIER-002"
+      ]
+    }
+  ]
+}

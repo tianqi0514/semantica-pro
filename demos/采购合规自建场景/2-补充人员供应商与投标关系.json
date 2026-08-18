@@ -1,0 +1,73 @@
+{
+  "nodes": [
+    {
+      "id": "EMPLOYEE-001",
+      "type": "person",
+      "properties": {
+        "content": "张伟（采购经办人）",
+        "employee_no": "EMPLOYEE-001",
+        "department": "信息技术部",
+        "role": "采购经办人",
+        "employment_status": "在职"
+      },
+      "valid_from": "2024-03-01T00:00:00+08:00"
+    },
+    {
+      "id": "BID-001",
+      "type": "bid",
+      "properties": {
+        "content": "华星科技服务器采购投标文件",
+        "bid_no": "BID-001",
+        "quoted_amount_cny": 2560000,
+        "submitted_at": "2026-08-11T14:30:00+08:00",
+        "status": "已提交"
+      },
+      "valid_from": "2026-08-11T14:30:00+08:00"
+    },
+    {
+      "id": "SUPPLIER-001",
+      "type": "supplier",
+      "properties": {
+        "content": "华星科技有限公司",
+        "supplier_no": "SUPPLIER-001",
+        "unified_credit_code": "91310000DEMO0001X",
+        "registered_address": "上海市浦东新区示例路 100 号",
+        "supplier_status": "准入供应商",
+        "risk_level": "待审查"
+      },
+      "valid_from": "2025-01-01T00:00:00+08:00"
+    }
+  ],
+  "edges": [
+    {
+      "id": "EDGE-CASE-SUBMITTED-EMPLOYEE-001",
+      "source": "CASE-001",
+      "target": "EMPLOYEE-001",
+      "type": "submittedBy",
+      "weight": 1.0,
+      "properties": {
+        "content": "该采购申请由张伟经办"
+      }
+    },
+    {
+      "id": "EDGE-CASE-RECEIVED-BID-001",
+      "source": "CASE-001",
+      "target": "BID-001",
+      "type": "receivedBid",
+      "weight": 1.0,
+      "properties": {
+        "content": "该采购申请收到此投标文件"
+      }
+    },
+    {
+      "id": "EDGE-BID-SUBMITTED-SUPPLIER-001",
+      "source": "BID-001",
+      "target": "SUPPLIER-001",
+      "type": "submittedBy",
+      "weight": 1.0,
+      "properties": {
+        "content": "该投标文件由华星科技提交"
+      }
+    }
+  ]
+}

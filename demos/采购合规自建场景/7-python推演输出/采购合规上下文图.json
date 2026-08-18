@@ -1,0 +1,595 @@
+{
+  "graph_id": "e1926e67-ed3c-4041-b927-036b62c52400",
+  "nodes": [
+    {
+      "id": "CASE-2026-001",
+      "type": "procurement_case",
+      "properties": {
+        "amount_cny": 2680000,
+        "currency": "CNY",
+        "content": "数据中心服务器采购"
+      }
+    },
+    {
+      "id": "DEPT-IT",
+      "type": "department",
+      "properties": {
+        "content": "信息技术部"
+      }
+    },
+    {
+      "id": "PROJECT-DC-2026",
+      "type": "project",
+      "properties": {
+        "content": "2026年数据中心扩容项目"
+      }
+    },
+    {
+      "id": "EVIDENCE-BUDGET-001",
+      "type": "evidence",
+      "properties": {
+        "evidence_type": "budget_approval",
+        "detail": "审批金额2680000元，已通过预算审批。",
+        "source_system": "ERP",
+        "content": "采购预算审批记录"
+      }
+    },
+    {
+      "id": "EVIDENCE-RISK-HX",
+      "type": "evidence",
+      "properties": {
+        "evidence_type": "supplier_risk_snapshot",
+        "detail": "2026-08-12风险等级为high，原因：重大履约风险记录。",
+        "source_system": "SupplierRisk",
+        "content": "华星科技风险快照"
+      }
+    },
+    {
+      "id": "EVIDENCE-RISK-AY",
+      "type": "evidence",
+      "properties": {
+        "evidence_type": "supplier_risk_snapshot",
+        "detail": "2026-08-12风险等级为normal。",
+        "source_system": "SupplierRisk",
+        "content": "安益信息风险快照"
+      }
+    },
+    {
+      "id": "SUPPLIER-HX",
+      "type": "supplier",
+      "properties": {
+        "risk_level": "high",
+        "risk_reason": "近一年出现重大履约风险记录",
+        "risk_source": "供应商风险平台日快照",
+        "risk_as_of": "2026-08-12",
+        "content": "华星科技有限公司"
+      }
+    },
+    {
+      "id": "SUPPLIER-AY",
+      "type": "supplier",
+      "properties": {
+        "risk_level": "normal",
+        "risk_reason": "未发现本演示规则所定义的阻断风险",
+        "risk_source": "供应商风险平台日快照",
+        "risk_as_of": "2026-08-12",
+        "content": "安益信息技术有限公司"
+      }
+    },
+    {
+      "id": "POLICY-METHOD-001",
+      "type": "policy",
+      "properties": {
+        "policy_type": "procurement_method",
+        "meaning": "本演示假定：采购金额达到200万元时，应采用公开招标。",
+        "content": "企业采购管理办法第12条（演示）"
+      }
+    },
+    {
+      "id": "POLICY-SUPPLIER-001",
+      "type": "policy",
+      "properties": {
+        "policy_type": "supplier_risk",
+        "meaning": "本演示假定：高风险供应商不得作为中标候选人。",
+        "content": "供应商风险管理办法第8条（演示）"
+      }
+    },
+    {
+      "id": "RULE-METHOD-001",
+      "type": "reasoning_rule",
+      "properties": {
+        "expression": "IF plan_for_case(?plan, ?case) AND case_amount_band(?case, open_tender_required) AND candidate_method(?plan, invited_tender) THEN violation(?plan, method_not_allowed)",
+        "business_meaning": "当项目达到公开招标阈值，候选方案却使用邀请招标时，推导出采购方式不符合演示内控。",
+        "content": "金额超阈值但未公开招标"
+      }
+    },
+    {
+      "id": "RULE-SUPPLIER-001",
+      "type": "reasoning_rule",
+      "properties": {
+        "expression": "IF candidate_supplier(?plan, ?supplier) AND supplier_risk(?supplier, high) THEN violation(?plan, high_risk_supplier)",
+        "business_meaning": "候选供应商的风险等级为 high 时，推导出供应商高风险问题。",
+        "content": "高风险供应商阻断"
+      }
+    },
+    {
+      "id": "RULE-REVIEW-001",
+      "type": "reasoning_rule",
+      "properties": {
+        "expression": "IF violation(?plan, ?reason) THEN requires_manual_review(?plan, ?reason)",
+        "business_meaning": "只要存在一个违规事项，就同步推导出对应的人工复核要求。",
+        "content": "违规事项转人工复核"
+      }
+    },
+    {
+      "id": "RULE-PASS-001",
+      "type": "reasoning_rule",
+      "properties": {
+        "expression": "IF candidate_method(?plan, open_tender) AND candidate_supplier(?plan, ?supplier) AND supplier_risk(?supplier, normal) THEN passes_core_rules(?plan)",
+        "business_meaning": "公开招标且供应商风险等级正常时，给方案加上通过本演示核心规则的标记。",
+        "content": "通过核心规则的正向标记"
+      }
+    },
+    {
+      "id": "PLAN-A",
+      "type": "candidate_plan",
+      "properties": {
+        "procurement_method": "invited_tender",
+        "quoted_price_cny": 2560000,
+        "estimated_delivery_days": 22,
+        "change_description": "不改采购方式，不更换供应商。",
+        "content": "维持原方案"
+      }
+    },
+    {
+      "id": "PLAN-B",
+      "type": "candidate_plan",
+      "properties": {
+        "procurement_method": "open_tender",
+        "quoted_price_cny": 2500000,
+        "estimated_delivery_days": 35,
+        "change_description": "改为公开招标，但仍计划选用高风险供应商。",
+        "content": "仅改为公开招标"
+      }
+    },
+    {
+      "id": "PLAN-C",
+      "type": "candidate_plan",
+      "properties": {
+        "procurement_method": "open_tender",
+        "quoted_price_cny": 2580000,
+        "estimated_delivery_days": 38,
+        "change_description": "改为公开招标，并选用风险等级正常的候选供应商。",
+        "content": "公开招标并更换供应商"
+      }
+    },
+    {
+      "id": "PLAN-D",
+      "type": "candidate_plan",
+      "properties": {
+        "procurement_method": "invited_tender",
+        "quoted_price_cny": 2480000,
+        "estimated_delivery_days": 20,
+        "change_description": "更换为风险等级正常的供应商，但仍使用邀请招标。",
+        "content": "仅更换供应商"
+      }
+    },
+    {
+      "id": "a441b00b-1be7-4e87-9be3-f3888d5875b6",
+      "type": "decision",
+      "properties": {
+        "category": "procurement_compliance",
+        "outcome": "通过：采用公开招标",
+        "confidence": 0.9,
+        "timestamp": 1786599325.592304,
+        "scenario": "采购 合规 审查 金额 2300000 公开招标 供应商 正常",
+        "decision_maker": "historical_import",
+        "reasoning": "金额超过企业公开招标阈值，供应商风险等级正常。",
+        "source": "demo_history",
+        "content": "采购 合规 审查 金额 2300000 公开招标 供应商 正常"
+      }
+    },
+    {
+      "id": "HIST-CASE-001",
+      "type": "entity",
+      "properties": {
+        "name": "HIST-CASE-001",
+        "content": "HIST-CASE-001"
+      }
+    },
+    {
+      "id": "HIST-SUPPLIER-001",
+      "type": "entity",
+      "properties": {
+        "name": "HIST-SUPPLIER-001",
+        "content": "HIST-SUPPLIER-001"
+      }
+    },
+    {
+      "id": "category_procurement_compliance",
+      "type": "category",
+      "properties": {
+        "name": "procurement_compliance",
+        "content": "category_procurement_compliance"
+      }
+    },
+    {
+      "id": "maker_historical_import",
+      "type": "decision_maker",
+      "properties": {
+        "name": "historical_import",
+        "content": "maker_historical_import"
+      }
+    },
+    {
+      "id": "1ce0386b-30a2-4835-9db0-fca2d88597f5",
+      "type": "decision",
+      "properties": {
+        "category": "procurement_compliance",
+        "outcome": "驳回：调整采购方式并重选供应商",
+        "confidence": 0.95,
+        "timestamp": 1786599325.59278,
+        "scenario": "采购 合规 审查 金额 3100000 邀请招标 供应商 高风险",
+        "decision_maker": "historical_import",
+        "reasoning": "采购方式和供应商风险均未通过当时的内控复核。",
+        "source": "demo_history",
+        "content": "采购 合规 审查 金额 3100000 邀请招标 供应商 高风险"
+      }
+    },
+    {
+      "id": "HIST-CASE-002",
+      "type": "entity",
+      "properties": {
+        "name": "HIST-CASE-002",
+        "content": "HIST-CASE-002"
+      }
+    },
+    {
+      "id": "HIST-SUPPLIER-002",
+      "type": "entity",
+      "properties": {
+        "name": "HIST-SUPPLIER-002",
+        "content": "HIST-SUPPLIER-002"
+      }
+    },
+    {
+      "id": "d2ab2293-1655-4d60-93f8-4fa3070cf349",
+      "type": "decision",
+      "properties": {
+        "category": "procurement_compliance",
+        "outcome": "推荐执行 PLAN-C: 公开招标并更换供应商",
+        "confidence": 0.9212,
+        "timestamp": 1786599325.593327,
+        "scenario": "采购 合规 审查 金额 2680000 公开招标 供应商 正常",
+        "decision_maker": "procurement_compliance_demo",
+        "reasoning": "候选方案共4个；推荐PLAN-C；核心规则状态为通过核心规则；综合分92.12；匹配历史前例2条。",
+        "selected_plan_id": "PLAN-C",
+        "selected_score": 92.12,
+        "executable_under_demo_rules": true,
+        "content": "采购 合规 审查 金额 2680000 公开招标 供应商 正常"
+      }
+    },
+    {
+      "id": "maker_procurement_compliance_demo",
+      "type": "decision_maker",
+      "properties": {
+        "name": "procurement_compliance_demo",
+        "content": "maker_procurement_compliance_demo"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "69f5cc28-fa67-5f83-a17d-821fbfe3b1d2",
+      "familyId": "69f5cc28-fa67-5f83-a17d-821fbfe3b1d2",
+      "source_id": "CASE-2026-001",
+      "target_id": "DEPT-IT",
+      "type": "requested_by",
+      "weight": 1.0,
+      "properties": {}
+    },
+    {
+      "id": "abc1ab0e-2eaa-545f-9138-a153826711b8",
+      "familyId": "abc1ab0e-2eaa-545f-9138-a153826711b8",
+      "source_id": "CASE-2026-001",
+      "target_id": "PROJECT-DC-2026",
+      "type": "belongs_to_project",
+      "weight": 1.0,
+      "properties": {}
+    },
+    {
+      "id": "1725308d-62cc-5980-9d0e-5d95559cf0fc",
+      "familyId": "1725308d-62cc-5980-9d0e-5d95559cf0fc",
+      "source_id": "CASE-2026-001",
+      "target_id": "EVIDENCE-BUDGET-001",
+      "type": "supported_by",
+      "weight": 1.0,
+      "properties": {}
+    },
+    {
+      "id": "7f099105-59ba-5723-b6a7-00bb3a96ae51",
+      "familyId": "7f099105-59ba-5723-b6a7-00bb3a96ae51",
+      "source_id": "SUPPLIER-HX",
+      "target_id": "EVIDENCE-RISK-HX",
+      "type": "risk_supported_by",
+      "weight": 1.0,
+      "properties": {}
+    },
+    {
+      "id": "898593b0-83f8-5a6e-a46a-62c61856c347",
+      "familyId": "898593b0-83f8-5a6e-a46a-62c61856c347",
+      "source_id": "SUPPLIER-AY",
+      "target_id": "EVIDENCE-RISK-AY",
+      "type": "risk_supported_by",
+      "weight": 1.0,
+      "properties": {}
+    },
+    {
+      "id": "c9b29c85-532d-5045-a02f-600074488c40",
+      "familyId": "c9b29c85-532d-5045-a02f-600074488c40",
+      "source_id": "RULE-METHOD-001",
+      "target_id": "POLICY-METHOD-001",
+      "type": "implements_policy",
+      "weight": 1.0,
+      "properties": {}
+    },
+    {
+      "id": "9e619be0-c3e9-5d33-9332-c2f3f091ee44",
+      "familyId": "9e619be0-c3e9-5d33-9332-c2f3f091ee44",
+      "source_id": "RULE-SUPPLIER-001",
+      "target_id": "POLICY-SUPPLIER-001",
+      "type": "implements_policy",
+      "weight": 1.0,
+      "properties": {}
+    },
+    {
+      "id": "a0d0b311-dcd2-57a3-8060-872cb1089c79",
+      "familyId": "a0d0b311-dcd2-57a3-8060-872cb1089c79",
+      "source_id": "RULE-REVIEW-001",
+      "target_id": "POLICY-METHOD-001",
+      "type": "implements_policy",
+      "weight": 1.0,
+      "properties": {}
+    },
+    {
+      "id": "d8db8d75-198a-52e8-921d-cd16d9dba879",
+      "familyId": "d8db8d75-198a-52e8-921d-cd16d9dba879",
+      "source_id": "RULE-PASS-001",
+      "target_id": "POLICY-METHOD-001",
+      "type": "implements_policy",
+      "weight": 1.0,
+      "properties": {}
+    },
+    {
+      "id": "68b077f2-94d2-56b4-8cab-a06ac1206e18",
+      "familyId": "68b077f2-94d2-56b4-8cab-a06ac1206e18",
+      "source_id": "PLAN-A",
+      "target_id": "CASE-2026-001",
+      "type": "plan_for",
+      "weight": 1.0,
+      "properties": {}
+    },
+    {
+      "id": "ac6ae350-b66b-527d-b7cf-02a6c69c3cb3",
+      "familyId": "ac6ae350-b66b-527d-b7cf-02a6c69c3cb3",
+      "source_id": "PLAN-A",
+      "target_id": "SUPPLIER-HX",
+      "type": "uses_supplier",
+      "weight": 1.0,
+      "properties": {}
+    },
+    {
+      "id": "1a6792a6-1c0b-5bd4-8b59-a1c84a09a104",
+      "familyId": "1a6792a6-1c0b-5bd4-8b59-a1c84a09a104",
+      "source_id": "PLAN-B",
+      "target_id": "CASE-2026-001",
+      "type": "plan_for",
+      "weight": 1.0,
+      "properties": {}
+    },
+    {
+      "id": "85781d87-712e-590d-bf21-08716ced035f",
+      "familyId": "85781d87-712e-590d-bf21-08716ced035f",
+      "source_id": "PLAN-B",
+      "target_id": "SUPPLIER-HX",
+      "type": "uses_supplier",
+      "weight": 1.0,
+      "properties": {}
+    },
+    {
+      "id": "c1db08d7-f964-5f9b-aefa-ad960f15c976",
+      "familyId": "c1db08d7-f964-5f9b-aefa-ad960f15c976",
+      "source_id": "PLAN-C",
+      "target_id": "CASE-2026-001",
+      "type": "plan_for",
+      "weight": 1.0,
+      "properties": {}
+    },
+    {
+      "id": "664b9dd0-98a9-56e9-a6ae-b218e237bf8b",
+      "familyId": "664b9dd0-98a9-56e9-a6ae-b218e237bf8b",
+      "source_id": "PLAN-C",
+      "target_id": "SUPPLIER-AY",
+      "type": "uses_supplier",
+      "weight": 1.0,
+      "properties": {}
+    },
+    {
+      "id": "3db0995b-c9fc-5806-9073-00a0724a4df1",
+      "familyId": "3db0995b-c9fc-5806-9073-00a0724a4df1",
+      "source_id": "PLAN-D",
+      "target_id": "CASE-2026-001",
+      "type": "plan_for",
+      "weight": 1.0,
+      "properties": {}
+    },
+    {
+      "id": "7442023e-5918-5c8c-be08-d7e28a8218e1",
+      "familyId": "7442023e-5918-5c8c-be08-d7e28a8218e1",
+      "source_id": "PLAN-D",
+      "target_id": "SUPPLIER-AY",
+      "type": "uses_supplier",
+      "weight": 1.0,
+      "properties": {}
+    },
+    {
+      "id": "f31b2567-aab2-5889-bfe2-4adb99174ff3",
+      "familyId": "f31b2567-aab2-5889-bfe2-4adb99174ff3",
+      "source_id": "a441b00b-1be7-4e87-9be3-f3888d5875b6",
+      "target_id": "HIST-CASE-001",
+      "type": "involves",
+      "weight": 1.0,
+      "properties": {
+        "confidence": 0.9
+      }
+    },
+    {
+      "id": "da433c12-3979-59ce-bd6d-5fd4e3e993cf",
+      "familyId": "da433c12-3979-59ce-bd6d-5fd4e3e993cf",
+      "source_id": "a441b00b-1be7-4e87-9be3-f3888d5875b6",
+      "target_id": "HIST-SUPPLIER-001",
+      "type": "involves",
+      "weight": 1.0,
+      "properties": {
+        "confidence": 0.9
+      }
+    },
+    {
+      "id": "68b4df30-7f64-5022-a367-4906f272a352",
+      "familyId": "68b4df30-7f64-5022-a367-4906f272a352",
+      "source_id": "a441b00b-1be7-4e87-9be3-f3888d5875b6",
+      "target_id": "category_procurement_compliance",
+      "type": "belongs_to",
+      "weight": 1.0,
+      "properties": {}
+    },
+    {
+      "id": "40f6ed1e-e561-57c0-bb9a-ecc37a5a7712",
+      "familyId": "40f6ed1e-e561-57c0-bb9a-ecc37a5a7712",
+      "source_id": "a441b00b-1be7-4e87-9be3-f3888d5875b6",
+      "target_id": "maker_historical_import",
+      "type": "made_by",
+      "weight": 1.0,
+      "properties": {}
+    },
+    {
+      "id": "4cebd05e-766a-5a42-8a8e-194d690be6ee",
+      "familyId": "4cebd05e-766a-5a42-8a8e-194d690be6ee",
+      "source_id": "1ce0386b-30a2-4835-9db0-fca2d88597f5",
+      "target_id": "HIST-CASE-002",
+      "type": "involves",
+      "weight": 1.0,
+      "properties": {
+        "confidence": 0.95
+      }
+    },
+    {
+      "id": "28443b4b-b555-5b31-bb58-af063ad3d344",
+      "familyId": "28443b4b-b555-5b31-bb58-af063ad3d344",
+      "source_id": "1ce0386b-30a2-4835-9db0-fca2d88597f5",
+      "target_id": "HIST-SUPPLIER-002",
+      "type": "involves",
+      "weight": 1.0,
+      "properties": {
+        "confidence": 0.95
+      }
+    },
+    {
+      "id": "5e0f07fb-4b92-5f11-b4e8-d6c4cac37a26",
+      "familyId": "5e0f07fb-4b92-5f11-b4e8-d6c4cac37a26",
+      "source_id": "1ce0386b-30a2-4835-9db0-fca2d88597f5",
+      "target_id": "category_procurement_compliance",
+      "type": "belongs_to",
+      "weight": 1.0,
+      "properties": {}
+    },
+    {
+      "id": "b7e3ca0f-aca3-5fd1-95f1-6a793cf3609e",
+      "familyId": "b7e3ca0f-aca3-5fd1-95f1-6a793cf3609e",
+      "source_id": "1ce0386b-30a2-4835-9db0-fca2d88597f5",
+      "target_id": "maker_historical_import",
+      "type": "made_by",
+      "weight": 1.0,
+      "properties": {}
+    },
+    {
+      "id": "73e3707f-162b-52b3-afb1-7f73988b6acf",
+      "familyId": "73e3707f-162b-52b3-afb1-7f73988b6acf",
+      "source_id": "d2ab2293-1655-4d60-93f8-4fa3070cf349",
+      "target_id": "CASE-2026-001",
+      "type": "involves",
+      "weight": 1.0,
+      "properties": {
+        "confidence": 0.9212
+      }
+    },
+    {
+      "id": "2693ac30-0605-568e-b1e6-227fd9f25f8b",
+      "familyId": "2693ac30-0605-568e-b1e6-227fd9f25f8b",
+      "source_id": "d2ab2293-1655-4d60-93f8-4fa3070cf349",
+      "target_id": "PLAN-C",
+      "type": "involves",
+      "weight": 1.0,
+      "properties": {
+        "confidence": 0.9212
+      }
+    },
+    {
+      "id": "c77ed7de-0052-50b7-893d-c6e97a3637fa",
+      "familyId": "c77ed7de-0052-50b7-893d-c6e97a3637fa",
+      "source_id": "d2ab2293-1655-4d60-93f8-4fa3070cf349",
+      "target_id": "SUPPLIER-AY",
+      "type": "involves",
+      "weight": 1.0,
+      "properties": {
+        "confidence": 0.9212
+      }
+    },
+    {
+      "id": "d3884d0d-1010-5fd2-bc37-dbe5a6335427",
+      "familyId": "d3884d0d-1010-5fd2-bc37-dbe5a6335427",
+      "source_id": "d2ab2293-1655-4d60-93f8-4fa3070cf349",
+      "target_id": "category_procurement_compliance",
+      "type": "belongs_to",
+      "weight": 1.0,
+      "properties": {}
+    },
+    {
+      "id": "f3b8fe52-0651-5813-9329-97c63a2e626b",
+      "familyId": "f3b8fe52-0651-5813-9329-97c63a2e626b",
+      "source_id": "d2ab2293-1655-4d60-93f8-4fa3070cf349",
+      "target_id": "maker_procurement_compliance_demo",
+      "type": "made_by",
+      "weight": 1.0,
+      "properties": {}
+    },
+    {
+      "id": "6b9a4ae3-812b-5e21-8571-064d445e636e",
+      "familyId": "6b9a4ae3-812b-5e21-8571-064d445e636e",
+      "source_id": "d2ab2293-1655-4d60-93f8-4fa3070cf349",
+      "target_id": "POLICY-METHOD-001",
+      "type": "governed_by",
+      "weight": 1.0,
+      "properties": {}
+    },
+    {
+      "id": "90e6f246-adb6-59c2-9f99-31986431f191",
+      "familyId": "90e6f246-adb6-59c2-9f99-31986431f191",
+      "source_id": "d2ab2293-1655-4d60-93f8-4fa3070cf349",
+      "target_id": "POLICY-SUPPLIER-001",
+      "type": "governed_by",
+      "weight": 1.0,
+      "properties": {}
+    },
+    {
+      "id": "915fe69b-7ae2-5c1a-859a-058d78d416e3",
+      "familyId": "915fe69b-7ae2-5c1a-859a-058d78d416e3",
+      "source_id": "d2ab2293-1655-4d60-93f8-4fa3070cf349",
+      "target_id": "RULE-PASS-001",
+      "type": "evaluated_by",
+      "weight": 1.0,
+      "properties": {}
+    }
+  ],
+  "links": []
+}

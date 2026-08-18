@@ -1,0 +1,108 @@
+@prefix pc: <https://demo.semantica.local/ontology/procurement-compliance#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+
+<https://demo.semantica.local/ontology/procurement-compliance> a owl:Ontology ;
+  rdfs:label "采购合规审查本体"@zh ;
+  dcterms:title "采购合规审查本体"@zh ;
+  dcterms:description "描述采购申请、供应商、投标、证据、风险信号、政策条款与审查决策之间关系的演示本体。"@zh ;
+  owl:versionInfo "1.0.0" .
+
+pc:BusinessObject a owl:Class ; rdfs:label "业务对象"@zh .
+pc:Party a owl:Class ; rdfs:label "参与方"@zh .
+pc:ControlObject a owl:Class ; rdfs:label "管控对象"@zh .
+
+pc:PurchaseRequest a owl:Class ;
+  rdfs:subClassOf pc:BusinessObject ;
+  rdfs:label "采购申请"@zh ;
+  rdfs:comment "描述采购标的、金额、采购方式和业务部门。"@zh .
+
+pc:Bid a owl:Class ;
+  rdfs:subClassOf pc:BusinessObject ;
+  rdfs:label "投标文件"@zh .
+
+pc:Supplier a owl:Class ;
+  rdfs:subClassOf pc:Party ;
+  rdfs:label "供应商"@zh .
+
+pc:Employee a owl:Class ;
+  rdfs:subClassOf pc:Party ;
+  rdfs:label "员工"@zh .
+
+pc:ReviewDecision a owl:Class ;
+  rdfs:subClassOf pc:ControlObject ;
+  rdfs:label "审查决策"@zh .
+
+pc:Policy a owl:Class ;
+  rdfs:subClassOf pc:ControlObject ;
+  rdfs:label "政策条款"@zh .
+
+pc:Evidence a owl:Class ;
+  rdfs:subClassOf pc:ControlObject ;
+  rdfs:label "审查证据"@zh .
+
+pc:RiskSignal a owl:Class ;
+  rdfs:subClassOf pc:ControlObject ;
+  rdfs:label "风险信号"@zh .
+
+pc:RegulatoryNotice a owl:Class ;
+  rdfs:subClassOf pc:Evidence ;
+  rdfs:label "外部监管通报"@zh .
+
+pc:submittedBy a owl:ObjectProperty ;
+  rdfs:label "由…提交"@zh ;
+  rdfs:domain pc:PurchaseRequest ;
+  rdfs:range pc:Employee .
+
+pc:receivedBid a owl:ObjectProperty ;
+  rdfs:label "收到投标"@zh ;
+  rdfs:domain pc:PurchaseRequest ;
+  rdfs:range pc:Bid .
+
+pc:bidBy a owl:ObjectProperty ;
+  rdfs:label "投标主体"@zh ;
+  rdfs:domain pc:Bid ;
+  rdfs:range pc:Supplier .
+
+pc:reviews a owl:ObjectProperty ;
+  rdfs:label "审查"@zh ;
+  rdfs:domain pc:ReviewDecision ;
+  rdfs:range pc:PurchaseRequest .
+
+pc:violates a owl:ObjectProperty ;
+  rdfs:label "违反"@zh ;
+  rdfs:domain pc:ReviewDecision ;
+  rdfs:range pc:Policy .
+
+pc:supportedBy a owl:ObjectProperty ;
+  rdfs:label "由证据支持"@zh ;
+  rdfs:domain pc:RiskSignal ;
+  rdfs:range pc:Evidence .
+
+pc:beneficialOwner a owl:ObjectProperty ;
+  rdfs:label "实际控制人"@zh ;
+  rdfs:domain pc:Supplier ;
+  rdfs:range pc:Party .
+
+pc:relatedTo a owl:ObjectProperty , owl:SymmetricProperty ;
+  rdfs:label "存在关联关系"@zh ;
+  rdfs:domain pc:Party ;
+  rdfs:range pc:Party .
+
+pc:amountCNY a owl:DatatypeProperty ;
+  rdfs:label "采购金额（人民币）"@zh ;
+  rdfs:domain pc:PurchaseRequest ;
+  rdfs:range xsd:decimal .
+
+pc:riskScore a owl:DatatypeProperty ;
+  rdfs:label "风险评分"@zh ;
+  rdfs:domain pc:RiskSignal ;
+  rdfs:range xsd:decimal .
+
+pc:outcome a owl:DatatypeProperty ;
+  rdfs:label "审查结论"@zh ;
+  rdfs:domain pc:ReviewDecision ;
+  rdfs:range xsd:string .

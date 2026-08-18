@@ -1,0 +1,521 @@
+{
+  "demo_name": "采购合规审查与方案推演",
+  "source_files": {
+    "config": "/demo/7-采购合规决策配置.json",
+    "business_input": "/demo/7-采购业务输入.json"
+  },
+  "case": {
+    "id": "CASE-2026-001",
+    "title": "数据中心服务器采购",
+    "amount_cny": 2680000,
+    "currency": "CNY",
+    "department_id": "DEPT-IT",
+    "department_name": "信息技术部",
+    "project_id": "PROJECT-DC-2026",
+    "project_name": "2026年数据中心扩容项目"
+  },
+  "implementation_boundary": {
+    "semantica_native": [
+      "ContextGraph.add_node/add_edge 构建上下文图",
+      "Reasoner.add_fact/add_rule/forward_chain 执行符号规则推理",
+      "ContextGraph.record_decision 记录决策",
+      "ContextGraph.find_precedents_by_scenario 查找前例",
+      "ContextGraph.get_neighbors 遍历决策上下文",
+      "ContextGraph.save_to_file 导出图快照"
+    ],
+    "demo_business_adapter": [
+      "JSON 业务数据和配置格式",
+      "将金额、方式、风险字段转成 Reasoner 事实",
+      "候选方案的生成与输入",
+      "硬阻断、扣分、价格分、交付分和选择顺序",
+      "终端摘要和本业务结果 JSON 格式"
+    ]
+  },
+  "plan_simulations": [
+    {
+      "plan_id": "PLAN-A",
+      "plan_name": "维持原方案",
+      "procurement_method": "invited_tender",
+      "supplier_id": "SUPPLIER-HX",
+      "quoted_price_cny": 2560000,
+      "estimated_delivery_days": 22,
+      "input_facts": [
+        "plan_for_case(PLAN-A, CASE-2026-001)",
+        "case_amount_band(CASE-2026-001, open_tender_required)",
+        "candidate_method(PLAN-A, invited_tender)",
+        "candidate_supplier(PLAN-A, SUPPLIER-HX)",
+        "supplier_risk(SUPPLIER-HX, high)"
+      ],
+      "inferred_facts": [
+        "violation(PLAN-A, method_not_allowed)",
+        "violation(PLAN-A, high_risk_supplier)",
+        "requires_manual_review(PLAN-A, high_risk_supplier)",
+        "requires_manual_review(PLAN-A, method_not_allowed)"
+      ],
+      "inference_trace": [
+        {
+          "conclusion": "violation(PLAN-A, method_not_allowed)",
+          "rule_id": "RULE-METHOD-001",
+          "rule_name": "金额超阈值但未公开招标",
+          "premises": [
+            "plan_for_case(PLAN-A, CASE-2026-001)",
+            "case_amount_band(CASE-2026-001, open_tender_required)",
+            "candidate_method(PLAN-A, invited_tender)"
+          ],
+          "confidence": 1.0
+        },
+        {
+          "conclusion": "violation(PLAN-A, high_risk_supplier)",
+          "rule_id": "RULE-SUPPLIER-001",
+          "rule_name": "高风险供应商阻断",
+          "premises": [
+            "candidate_supplier(PLAN-A, SUPPLIER-HX)",
+            "supplier_risk(SUPPLIER-HX, high)"
+          ],
+          "confidence": 1.0
+        },
+        {
+          "conclusion": "requires_manual_review(PLAN-A, high_risk_supplier)",
+          "rule_id": "RULE-REVIEW-001",
+          "rule_name": "违规事项转人工复核",
+          "premises": [
+            "violation(PLAN-A, high_risk_supplier)"
+          ],
+          "confidence": 1.0
+        },
+        {
+          "conclusion": "requires_manual_review(PLAN-A, method_not_allowed)",
+          "rule_id": "RULE-REVIEW-001",
+          "rule_name": "违规事项转人工复核",
+          "premises": [
+            "violation(PLAN-A, method_not_allowed)"
+          ],
+          "confidence": 1.0
+        }
+      ],
+      "violations": [
+        "high_risk_supplier",
+        "method_not_allowed"
+      ],
+      "manual_reviews": [
+        "high_risk_supplier",
+        "method_not_allowed"
+      ],
+      "blocking_reasons": [
+        "high_risk_supplier"
+      ],
+      "hard_blocked": true,
+      "status": "硬性阻断",
+      "scores": {
+        "compliance": 0.0,
+        "price": 96.88,
+        "delivery": 90.91,
+        "total": 33.01
+      }
+    },
+    {
+      "plan_id": "PLAN-B",
+      "plan_name": "仅改为公开招标",
+      "procurement_method": "open_tender",
+      "supplier_id": "SUPPLIER-HX",
+      "quoted_price_cny": 2500000,
+      "estimated_delivery_days": 35,
+      "input_facts": [
+        "plan_for_case(PLAN-B, CASE-2026-001)",
+        "case_amount_band(CASE-2026-001, open_tender_required)",
+        "candidate_method(PLAN-B, open_tender)",
+        "candidate_supplier(PLAN-B, SUPPLIER-HX)",
+        "supplier_risk(SUPPLIER-HX, high)"
+      ],
+      "inferred_facts": [
+        "violation(PLAN-B, high_risk_supplier)",
+        "requires_manual_review(PLAN-B, high_risk_supplier)"
+      ],
+      "inference_trace": [
+        {
+          "conclusion": "violation(PLAN-B, high_risk_supplier)",
+          "rule_id": "RULE-SUPPLIER-001",
+          "rule_name": "高风险供应商阻断",
+          "premises": [
+            "candidate_supplier(PLAN-B, SUPPLIER-HX)",
+            "supplier_risk(SUPPLIER-HX, high)"
+          ],
+          "confidence": 1.0
+        },
+        {
+          "conclusion": "requires_manual_review(PLAN-B, high_risk_supplier)",
+          "rule_id": "RULE-REVIEW-001",
+          "rule_name": "违规事项转人工复核",
+          "premises": [
+            "violation(PLAN-B, high_risk_supplier)"
+          ],
+          "confidence": 1.0
+        }
+      ],
+      "violations": [
+        "high_risk_supplier"
+      ],
+      "manual_reviews": [
+        "high_risk_supplier"
+      ],
+      "blocking_reasons": [
+        "high_risk_supplier"
+      ],
+      "hard_blocked": true,
+      "status": "硬性阻断",
+      "scores": {
+        "compliance": 30.0,
+        "price": 99.2,
+        "delivery": 57.14,
+        "total": 47.91
+      }
+    },
+    {
+      "plan_id": "PLAN-C",
+      "plan_name": "公开招标并更换供应商",
+      "procurement_method": "open_tender",
+      "supplier_id": "SUPPLIER-AY",
+      "quoted_price_cny": 2580000,
+      "estimated_delivery_days": 38,
+      "input_facts": [
+        "plan_for_case(PLAN-C, CASE-2026-001)",
+        "case_amount_band(CASE-2026-001, open_tender_required)",
+        "candidate_method(PLAN-C, open_tender)",
+        "candidate_supplier(PLAN-C, SUPPLIER-AY)",
+        "supplier_risk(SUPPLIER-AY, normal)"
+      ],
+      "inferred_facts": [
+        "passes_core_rules(PLAN-C)"
+      ],
+      "inference_trace": [
+        {
+          "conclusion": "passes_core_rules(PLAN-C)",
+          "rule_id": "RULE-PASS-001",
+          "rule_name": "通过核心规则的正向标记",
+          "premises": [
+            "candidate_method(PLAN-C, open_tender)",
+            "candidate_supplier(PLAN-C, SUPPLIER-AY)",
+            "supplier_risk(SUPPLIER-AY, normal)"
+          ],
+          "confidence": 1.0
+        }
+      ],
+      "violations": [],
+      "manual_reviews": [],
+      "blocking_reasons": [],
+      "hard_blocked": false,
+      "status": "通过核心规则",
+      "scores": {
+        "compliance": 100.0,
+        "price": 96.12,
+        "delivery": 52.63,
+        "total": 92.12
+      }
+    },
+    {
+      "plan_id": "PLAN-D",
+      "plan_name": "仅更换供应商",
+      "procurement_method": "invited_tender",
+      "supplier_id": "SUPPLIER-AY",
+      "quoted_price_cny": 2480000,
+      "estimated_delivery_days": 20,
+      "input_facts": [
+        "plan_for_case(PLAN-D, CASE-2026-001)",
+        "case_amount_band(CASE-2026-001, open_tender_required)",
+        "candidate_method(PLAN-D, invited_tender)",
+        "candidate_supplier(PLAN-D, SUPPLIER-AY)",
+        "supplier_risk(SUPPLIER-AY, normal)"
+      ],
+      "inferred_facts": [
+        "violation(PLAN-D, method_not_allowed)",
+        "requires_manual_review(PLAN-D, method_not_allowed)"
+      ],
+      "inference_trace": [
+        {
+          "conclusion": "violation(PLAN-D, method_not_allowed)",
+          "rule_id": "RULE-METHOD-001",
+          "rule_name": "金额超阈值但未公开招标",
+          "premises": [
+            "plan_for_case(PLAN-D, CASE-2026-001)",
+            "case_amount_band(CASE-2026-001, open_tender_required)",
+            "candidate_method(PLAN-D, invited_tender)"
+          ],
+          "confidence": 1.0
+        },
+        {
+          "conclusion": "requires_manual_review(PLAN-D, method_not_allowed)",
+          "rule_id": "RULE-REVIEW-001",
+          "rule_name": "违规事项转人工复核",
+          "premises": [
+            "violation(PLAN-D, method_not_allowed)"
+          ],
+          "confidence": 1.0
+        }
+      ],
+      "violations": [
+        "method_not_allowed"
+      ],
+      "manual_reviews": [
+        "method_not_allowed"
+      ],
+      "blocking_reasons": [],
+      "hard_blocked": false,
+      "status": "需人工复核",
+      "scores": {
+        "compliance": 55.0,
+        "price": 100.0,
+        "delivery": 100.0,
+        "total": 70.75
+      }
+    }
+  ],
+  "recommendation": {
+    "selected_plan_id": "PLAN-C",
+    "selected_plan_name": "公开招标并更换供应商",
+    "executable_under_demo_rules": true,
+    "selection_basis": "在无违规且未硬阻断的方案中选综合分最高者",
+    "selected_total_score": 92.12
+  },
+  "precedent_search": {
+    "query": "采购 合规 审查 金额 2680000 公开招标 供应商 正常",
+    "implementation_note": "ContextGraph 当前的这个前例接口会对空格分词后的文本做 Jaccard 相似度；本演示因此有意使用空格分隔中文关键词。",
+    "historical_decision_ids": [
+      "a441b00b-1be7-4e87-9be3-f3888d5875b6",
+      "1ce0386b-30a2-4835-9db0-fca2d88597f5"
+    ],
+    "matches": [
+      {
+        "decision_id": "a441b00b-1be7-4e87-9be3-f3888d5875b6",
+        "scenario": "采购 合规 审查 金额 2300000 公开招标 供应商 正常",
+        "outcome": "通过：采用公开招标",
+        "similarity": 0.4083,
+        "content_similarity": 0.5833,
+        "structural_similarity": 0.0
+      },
+      {
+        "decision_id": "1ce0386b-30a2-4835-9db0-fca2d88597f5",
+        "scenario": "采购 合规 审查 金额 3100000 邀请招标 供应商 高风险",
+        "outcome": "驳回：调整采购方式并重选供应商",
+        "similarity": 0.25,
+        "content_similarity": 0.3571,
+        "structural_similarity": 0.0
+      }
+    ]
+  },
+  "final_decision": {
+    "decision_id": "d2ab2293-1655-4d60-93f8-4fa3070cf349",
+    "reasoning": "候选方案共4个；推荐PLAN-C；核心规则状态为通过核心规则；综合分92.12；匹配历史前例2条。",
+    "confidence": 0.9212,
+    "confidence_note": "演示定义为综合分/100，不是校准概率",
+    "fired_rule_ids": [
+      "RULE-PASS-001"
+    ],
+    "context_within_2_hops": [
+      {
+        "id": "CASE-2026-001",
+        "type": "procurement_case",
+        "content": "数据中心服务器采购",
+        "relationship": "involves",
+        "weight": 1.0,
+        "hop": 1,
+        "distance_band": "direct",
+        "confidence_decay": 1.0,
+        "path_to_anchor": [
+          "d2ab2293-1655-4d60-93f8-4fa3070cf349",
+          "CASE-2026-001"
+        ]
+      },
+      {
+        "id": "PLAN-C",
+        "type": "candidate_plan",
+        "content": "公开招标并更换供应商",
+        "relationship": "involves",
+        "weight": 1.0,
+        "hop": 1,
+        "distance_band": "direct",
+        "confidence_decay": 1.0,
+        "path_to_anchor": [
+          "d2ab2293-1655-4d60-93f8-4fa3070cf349",
+          "PLAN-C"
+        ]
+      },
+      {
+        "id": "SUPPLIER-AY",
+        "type": "supplier",
+        "content": "安益信息技术有限公司",
+        "relationship": "involves",
+        "weight": 1.0,
+        "hop": 1,
+        "distance_band": "direct",
+        "confidence_decay": 1.0,
+        "path_to_anchor": [
+          "d2ab2293-1655-4d60-93f8-4fa3070cf349",
+          "SUPPLIER-AY"
+        ]
+      },
+      {
+        "id": "category_procurement_compliance",
+        "type": "category",
+        "content": "category_procurement_compliance",
+        "relationship": "belongs_to",
+        "weight": 1.0,
+        "hop": 1,
+        "distance_band": "direct",
+        "confidence_decay": 1.0,
+        "path_to_anchor": [
+          "d2ab2293-1655-4d60-93f8-4fa3070cf349",
+          "category_procurement_compliance"
+        ]
+      },
+      {
+        "id": "maker_procurement_compliance_demo",
+        "type": "decision_maker",
+        "content": "maker_procurement_compliance_demo",
+        "relationship": "made_by",
+        "weight": 1.0,
+        "hop": 1,
+        "distance_band": "direct",
+        "confidence_decay": 1.0,
+        "path_to_anchor": [
+          "d2ab2293-1655-4d60-93f8-4fa3070cf349",
+          "maker_procurement_compliance_demo"
+        ]
+      },
+      {
+        "id": "POLICY-METHOD-001",
+        "type": "policy",
+        "content": "企业采购管理办法第12条（演示）",
+        "relationship": "governed_by",
+        "weight": 1.0,
+        "hop": 1,
+        "distance_band": "direct",
+        "confidence_decay": 1.0,
+        "path_to_anchor": [
+          "d2ab2293-1655-4d60-93f8-4fa3070cf349",
+          "POLICY-METHOD-001"
+        ]
+      },
+      {
+        "id": "POLICY-SUPPLIER-001",
+        "type": "policy",
+        "content": "供应商风险管理办法第8条（演示）",
+        "relationship": "governed_by",
+        "weight": 1.0,
+        "hop": 1,
+        "distance_band": "direct",
+        "confidence_decay": 1.0,
+        "path_to_anchor": [
+          "d2ab2293-1655-4d60-93f8-4fa3070cf349",
+          "POLICY-SUPPLIER-001"
+        ]
+      },
+      {
+        "id": "RULE-PASS-001",
+        "type": "reasoning_rule",
+        "content": "通过核心规则的正向标记",
+        "relationship": "evaluated_by",
+        "weight": 1.0,
+        "hop": 1,
+        "distance_band": "direct",
+        "confidence_decay": 1.0,
+        "path_to_anchor": [
+          "d2ab2293-1655-4d60-93f8-4fa3070cf349",
+          "RULE-PASS-001"
+        ]
+      },
+      {
+        "id": "DEPT-IT",
+        "type": "department",
+        "content": "信息技术部",
+        "relationship": "requested_by",
+        "weight": 1.0,
+        "hop": 2,
+        "distance_band": "near",
+        "confidence_decay": 1.0,
+        "path_to_anchor": [
+          "d2ab2293-1655-4d60-93f8-4fa3070cf349",
+          "CASE-2026-001",
+          "DEPT-IT"
+        ]
+      },
+      {
+        "id": "PROJECT-DC-2026",
+        "type": "project",
+        "content": "2026年数据中心扩容项目",
+        "relationship": "belongs_to_project",
+        "weight": 1.0,
+        "hop": 2,
+        "distance_band": "near",
+        "confidence_decay": 1.0,
+        "path_to_anchor": [
+          "d2ab2293-1655-4d60-93f8-4fa3070cf349",
+          "CASE-2026-001",
+          "PROJECT-DC-2026"
+        ]
+      },
+      {
+        "id": "EVIDENCE-BUDGET-001",
+        "type": "evidence",
+        "content": "采购预算审批记录",
+        "relationship": "supported_by",
+        "weight": 1.0,
+        "hop": 2,
+        "distance_band": "near",
+        "confidence_decay": 1.0,
+        "path_to_anchor": [
+          "d2ab2293-1655-4d60-93f8-4fa3070cf349",
+          "CASE-2026-001",
+          "EVIDENCE-BUDGET-001"
+        ]
+      },
+      {
+        "id": "EVIDENCE-RISK-AY",
+        "type": "evidence",
+        "content": "安益信息风险快照",
+        "relationship": "risk_supported_by",
+        "weight": 1.0,
+        "hop": 2,
+        "distance_band": "near",
+        "confidence_decay": 1.0,
+        "path_to_anchor": [
+          "d2ab2293-1655-4d60-93f8-4fa3070cf349",
+          "SUPPLIER-AY",
+          "EVIDENCE-RISK-AY"
+        ]
+      }
+    ]
+  },
+  "graph_stats": {
+    "node_count": 28,
+    "edge_count": 33,
+    "node_types": {
+      "procurement_case": 1,
+      "department": 1,
+      "project": 1,
+      "evidence": 3,
+      "supplier": 2,
+      "policy": 2,
+      "reasoning_rule": 4,
+      "candidate_plan": 4,
+      "decision": 3,
+      "entity": 4,
+      "category": 1,
+      "decision_maker": 2
+    },
+    "edge_types": {
+      "requested_by": 1,
+      "belongs_to_project": 1,
+      "supported_by": 1,
+      "risk_supported_by": 2,
+      "implements_policy": 4,
+      "plan_for": 4,
+      "uses_supplier": 4,
+      "involves": 7,
+      "belongs_to": 3,
+      "made_by": 3,
+      "governed_by": 2,
+      "evaluated_by": 1
+    },
+    "density": 0.04365079365079365
+  }
+}

@@ -1,0 +1,89 @@
+@prefix pcv: <https://demo.semantica.local/vocab/procurement-compliance/> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+
+pcv:scheme a skos:ConceptScheme ;
+  skos:prefLabel "采购合规审查术语表"@zh ;
+  dcterms:description "用于统一采购风险、采购方式和审查结论口径的演示词表。"@zh ;
+  skos:hasTopConcept pcv:risk, pcv:method, pcv:outcome .
+
+pcv:risk a skos:Concept ;
+  skos:prefLabel "合规风险"@zh ;
+  skos:notation "RISK" ;
+  skos:definition "可能导致采购不公、利益冲突或供应商失信的风险类别。"@zh ;
+  skos:topConceptOf pcv:scheme ;
+  skos:inScheme pcv:scheme .
+
+pcv:collusion a skos:Concept ;
+  skos:prefLabel "围标串标"@zh ;
+  skos:altLabel "陪标"@zh ;
+  skos:notation "RISK-01" ;
+  skos:broader pcv:risk ;
+  skos:inScheme pcv:scheme .
+
+pcv:related-party a skos:Concept ;
+  skos:prefLabel "未披露关联交易"@zh ;
+  skos:altLabel "利益冲突"@zh ;
+  skos:notation "RISK-02" ;
+  skos:broader pcv:risk ;
+  skos:inScheme pcv:scheme .
+
+pcv:blacklist a skos:Concept ;
+  skos:prefLabel "供应商黑名单"@zh ;
+  skos:notation "RISK-03" ;
+  skos:broader pcv:risk ;
+  skos:inScheme pcv:scheme .
+
+pcv:expired-qualification a skos:Concept ;
+  skos:prefLabel "资质失效"@zh ;
+  skos:notation "RISK-04" ;
+  skos:broader pcv:risk ;
+  skos:inScheme pcv:scheme .
+
+pcv:method a skos:Concept ;
+  skos:prefLabel "采购方式"@zh ;
+  skos:notation "METHOD" ;
+  skos:topConceptOf pcv:scheme ;
+  skos:inScheme pcv:scheme .
+
+pcv:open-tender a skos:Concept ;
+  skos:prefLabel "公开招标"@zh ;
+  skos:notation "METHOD-01" ;
+  skos:broader pcv:method ;
+  skos:inScheme pcv:scheme .
+
+pcv:invited-tender a skos:Concept ;
+  skos:prefLabel "邀请招标"@zh ;
+  skos:notation "METHOD-02" ;
+  skos:broader pcv:method ;
+  skos:inScheme pcv:scheme .
+
+pcv:single-source a skos:Concept ;
+  skos:prefLabel "单一来源"@zh ;
+  skos:notation "METHOD-03" ;
+  skos:broader pcv:method ;
+  skos:inScheme pcv:scheme .
+
+pcv:outcome a skos:Concept ;
+  skos:prefLabel "审查结论"@zh ;
+  skos:notation "OUTCOME" ;
+  skos:topConceptOf pcv:scheme ;
+  skos:inScheme pcv:scheme .
+
+pcv:approved a skos:Concept ;
+  skos:prefLabel "审查通过"@zh ;
+  skos:notation "OUTCOME-01" ;
+  skos:broader pcv:outcome ;
+  skos:inScheme pcv:scheme .
+
+pcv:pending-review a skos:Concept ;
+  skos:prefLabel "暂缓并升级复核"@zh ;
+  skos:notation "OUTCOME-02" ;
+  skos:broader pcv:outcome ;
+  skos:inScheme pcv:scheme .
+
+pcv:rejected a skos:Concept ;
+  skos:prefLabel "驳回并重新采购"@zh ;
+  skos:notation "OUTCOME-03" ;
+  skos:broader pcv:outcome ;
+  skos:inScheme pcv:scheme .

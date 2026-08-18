@@ -1,0 +1,97 @@
+{
+  "nodes": [
+    {
+      "id": "DECISION-001",
+      "type": "decision",
+      "properties": {
+        "content": "服务器采购合规审查结论",
+        "category": "采购合规审查",
+        "scenario": "服务器采购金额为 268 万元，采用邀请招标，需要检查采购方式是否符合制度。",
+        "outcome": "pending_review｜暂缓并复核",
+        "reasoning": "采购金额超过 200 万元，但采购方式为邀请招标，命中公开招标制度检查条件。",
+        "confidence": 0.95,
+        "risk_score": 85,
+        "review_level": "高风险"
+      },
+      "valid_from": "2026-08-12T09:00:00+08:00"
+    },
+    {
+      "id": "CASE-001",
+      "type": "purchase_request",
+      "properties": {
+        "content": "服务器采购申请",
+        "request_no": "CASE-001",
+        "amount_cny": 2680000,
+        "procurement_method": "邀请招标",
+        "business_unit": "信息技术部",
+        "status": "等待合规复核"
+      },
+      "valid_from": "2026-08-10T09:00:00+08:00"
+    },
+    {
+      "id": "POLICY-001",
+      "type": "policy",
+      "properties": {
+        "content": "采购管理制度：200 万元以上应当公开招标",
+        "policy_no": "POLICY-001",
+        "threshold_cny": 2000000,
+        "required_method": "公开招标"
+      },
+      "valid_from": "2026-01-01T00:00:00+08:00"
+    },
+    {
+      "id": "EVIDENCE-001",
+      "type": "document",
+      "properties": {
+        "content": "CASE-001 采购申请单",
+        "document_type": "采购申请",
+        "source_system": "采购系统",
+        "document_status": "已提交"
+      },
+      "valid_from": "2026-08-10T09:00:00+08:00"
+    }
+  ],
+  "edges": [
+    {
+      "id": "EDGE-DECISION-REVIEWS-CASE-001",
+      "source": "DECISION-001",
+      "target": "CASE-001",
+      "type": "reviews",
+      "weight": 1.0,
+      "properties": {
+        "content": "审查该采购申请"
+      }
+    },
+    {
+      "id": "EDGE-DECISION-VIOLATES-POLICY-001",
+      "source": "DECISION-001",
+      "target": "POLICY-001",
+      "type": "violates",
+      "weight": 1.0,
+      "properties": {
+        "content": "采购方式不符合金额阈值要求",
+        "severity": "高"
+      }
+    },
+    {
+      "id": "EDGE-DECISION-EVIDENCE-001",
+      "source": "DECISION-001",
+      "target": "EVIDENCE-001",
+      "type": "wasInformedBy",
+      "weight": 1.0,
+      "properties": {
+        "content": "审查结论参考该采购申请单"
+      }
+    },
+    {
+      "id": "EDGE-EVIDENCE-DERIVED-CASE-001",
+      "source": "EVIDENCE-001",
+      "target": "CASE-001",
+      "type": "wasDerivedFrom",
+      "weight": 1.0,
+      "properties": {
+        "content": "采购申请单记录该采购申请"
+      }
+    }
+  ]
+}

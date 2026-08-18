@@ -1,0 +1,35 @@
+{
+  "nodes": [
+    {
+      "id": "NOTICE-001",
+      "type": "regulatory_notice",
+      "properties": {
+        "content": "采购诚信平台通报：华星科技有限公司列入采购观察名单",
+        "notice_no": "BLACKLIST-2026-017",
+        "evidence_type": "供应商黑名单",
+        "publisher": "行业采购诚信协作平台",
+        "published_at": "2026-08-12T10:00:00+08:00",
+        "reason": "在其他采购项目中出现投标文件异常一致，列入采购观察名单",
+        "severity": "高",
+        "status": "有效",
+        "source": "采购诚信信息平台"
+      },
+      "valid_from": "2026-08-12T10:00:00+08:00"
+    }
+  ],
+  "edges": [
+    {
+      "id": "EDGE-SUPPLIER-HAS-RISK-EVIDENCE-001",
+      "source": "SUPPLIER-001",
+      "target": "NOTICE-001",
+      "type": "hasRiskEvidence",
+      "weight": 1.0,
+      "properties": {
+        "content": "华星科技有限公司关联到该外部黑名单通报",
+        "evidence_type": "供应商黑名单",
+        "source": "采购诚信信息平台"
+      },
+      "valid_from": "2026-08-12T10:00:00+08:00"
+    }
+  ]
+}

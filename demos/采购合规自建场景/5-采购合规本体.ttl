@@ -1,0 +1,145 @@
+@prefix pc: <https://demo.semantica.local/ontology/procurement-compliance#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+
+<https://demo.semantica.local/ontology/procurement-compliance> a owl:Ontology ;
+  rdfs:label "采购合规审查本体"@zh ;
+  dcterms:description "定义当前采购合规自建场景使用的业务对象、关系和主要属性。"@zh ;
+  owl:versionInfo "1.0.0" .
+
+# 用于记录当前 JSON 简写与正式本体类、关系之间的对应值。
+# 当前 Explorer 会展示这些值，但不会自动执行这种映射。
+pc:jsonType a owl:AnnotationProperty ;
+  rdfs:label "JSON 节点类型"@zh .
+
+pc:jsonRelationType a owl:AnnotationProperty ;
+  rdfs:label "JSON 关系类型"@zh .
+
+# 上层分类
+pc:BusinessObject a owl:Class ;
+  rdfs:label "业务对象"@zh .
+
+pc:Party a owl:Class ;
+  rdfs:label "参与方"@zh .
+
+pc:ControlObject a owl:Class ;
+  rdfs:label "管控对象"@zh .
+
+# 当前场景中的节点类型
+pc:ReviewDecision a owl:Class ;
+  rdfs:subClassOf pc:ControlObject ;
+  rdfs:label "审查结论"@zh ;
+  pc:jsonType "decision" .
+
+pc:PurchaseRequest a owl:Class ;
+  rdfs:subClassOf pc:BusinessObject ;
+  rdfs:label "采购申请"@zh ;
+  pc:jsonType "purchase_request" .
+
+pc:Policy a owl:Class ;
+  rdfs:subClassOf pc:ControlObject ;
+  rdfs:label "采购制度"@zh ;
+  pc:jsonType "policy" .
+
+pc:Evidence a owl:Class ;
+  rdfs:subClassOf pc:ControlObject ;
+  rdfs:label "证明材料"@zh ;
+  pc:jsonType "document" .
+
+pc:Employee a owl:Class ;
+  rdfs:subClassOf pc:Party ;
+  rdfs:label "员工"@zh ;
+  pc:jsonType "person" .
+
+pc:Bid a owl:Class ;
+  rdfs:subClassOf pc:BusinessObject ;
+  rdfs:label "投标文件"@zh ;
+  pc:jsonType "bid" .
+
+pc:Supplier a owl:Class ;
+  rdfs:subClassOf pc:Party ;
+  rdfs:label "供应商"@zh ;
+  pc:jsonType "supplier" .
+
+pc:RegulatoryNotice a owl:Class ;
+  rdfs:subClassOf pc:Evidence ;
+  rdfs:label "监管通报"@zh ;
+  pc:jsonType "regulatory_notice" .
+
+# 当前场景中的关系类型
+pc:reviews a owl:ObjectProperty ;
+  rdfs:label "审查"@zh ;
+  rdfs:domain pc:ReviewDecision ;
+  rdfs:range pc:PurchaseRequest ;
+  pc:jsonRelationType "reviews" .
+
+pc:violates a owl:ObjectProperty ;
+  rdfs:label "违反"@zh ;
+  rdfs:domain pc:ReviewDecision ;
+  rdfs:range pc:Policy ;
+  pc:jsonRelationType "violates" .
+
+pc:wasInformedBy a owl:ObjectProperty ;
+  rdfs:label "参考材料"@zh ;
+  rdfs:domain pc:ReviewDecision ;
+  rdfs:range pc:Evidence ;
+  pc:jsonRelationType "wasInformedBy" .
+
+pc:wasDerivedFrom a owl:ObjectProperty ;
+  rdfs:label "来源于"@zh ;
+  rdfs:domain pc:Evidence ;
+  rdfs:range pc:PurchaseRequest ;
+  pc:jsonRelationType "wasDerivedFrom" .
+
+pc:submittedBy a owl:ObjectProperty ;
+  rdfs:label "由参与方提交"@zh ;
+  rdfs:domain pc:BusinessObject ;
+  rdfs:range pc:Party ;
+  pc:jsonRelationType "submittedBy" .
+
+pc:receivedBid a owl:ObjectProperty ;
+  rdfs:label "收到投标"@zh ;
+  rdfs:domain pc:PurchaseRequest ;
+  rdfs:range pc:Bid ;
+  pc:jsonRelationType "receivedBid" .
+
+pc:hasRiskEvidence a owl:ObjectProperty ;
+  rdfs:label "具有风险证据"@zh ;
+  rdfs:domain pc:Supplier ;
+  rdfs:range pc:RegulatoryNotice ;
+  pc:jsonRelationType "hasRiskEvidence" .
+
+pc:flags_supplier a owl:ObjectProperty ;
+  rdfs:label "标记风险供应商"@zh ;
+  rdfs:domain pc:ReviewDecision ;
+  rdfs:range pc:Supplier ;
+  pc:jsonRelationType "flags_supplier" .
+
+# 当前场景中需要重点理解的属性
+pc:amount_cny a owl:DatatypeProperty ;
+  rdfs:label "采购金额（人民币）"@zh ;
+  rdfs:domain pc:PurchaseRequest ;
+  rdfs:range xsd:decimal .
+
+pc:procurement_method a owl:DatatypeProperty ;
+  rdfs:label "采购方式"@zh ;
+  rdfs:domain pc:PurchaseRequest ;
+  rdfs:range xsd:string .
+
+pc:severity a owl:DatatypeProperty ;
+  rdfs:label "严重程度"@zh ;
+  rdfs:domain pc:RegulatoryNotice ;
+  rdfs:range xsd:string .
+
+pc:risk_score a owl:DatatypeProperty ;
+  rdfs:label "风险评分"@zh ;
+  rdfs:domain pc:ReviewDecision ;
+  rdfs:range xsd:decimal .
+
+pc:review_level a owl:DatatypeProperty ;
+  rdfs:label "审查等级"@zh ;
+  rdfs:domain pc:ReviewDecision ;
+  rdfs:range xsd:string .

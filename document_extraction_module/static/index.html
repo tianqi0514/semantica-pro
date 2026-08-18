@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Semantica 文档知识抽取</title>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+  <main class="shell">
+    <header class="hero">
+      <div>
+        <p class="eyebrow">SEMANTICA · DOCUMENT EXTRACTION</p>
+        <h1>把业务文档变成可导入的知识图谱数据</h1>
+        <p class="lede">上传文档，抽取实体与关系，核对来源证据，再导出为 Explorer 可直接上传的 JSON 或 CSV。</p>
+      </div>
+      <div class="flow" aria-label="处理流程">
+        <span>文档</span><i>→</i><span>文本</span><i>→</i><span>实体</span><i>→</i><span>关系</span><i>→</i><span>导出</span>
+      </div>
+    </header>
+
+    <section class="panel input-panel">
+      <div class="section-title">
+        <div><span class="step">01</span><h2>输入与配置</h2></div>
+        <span class="tag">场景：采购合规审查</span>
+      </div>
+      <form id="extract-form">
+        <div class="form-grid">
+          <label class="dropzone" id="dropzone">
+            <input id="document" name="document" type="file" accept=".pdf,.docx,.html,.htm,.txt,.md,.markdown" multiple required>
+            <strong id="file-label">选择或拖入多个文档</strong>
+            <small>PDF / DOCX / TXT / HTML / Markdown，单个最大 25 MB，一次最多 20 个</small>
+          </label>
+
+          <div class="settings">
+            <label>抽取方式
+              <select id="method">
+                <option value="regex">配置规则（本地可复现）</option>
+                <option value="llm">大模型（中文语义推荐）</option>
+                <option value="ml">spaCy 模型（主要适合英文）</option>
+              </select>
+            </label>
+            <div id="llm-settings" class="llm-settings hidden">
+              <label>模型服务
+                <select id="provider">
+                  <option value="kimi">Kimi（OpenAI 兼容协议）</option>
+                </select>
+              </label>
+              <label>模型名称<input id="model" value="kimi-k3"></label>
+              <label>兼容服务地址<input id="base-url" value="https://api.moonshot.cn/v1"></label>
+              <label class="api-key-field">API Key<input id="api-key" type="password" autocomplete="new-password" placeholder="已配置时可留空"></label>
+              <p class="notice" id="key-status">密钥会加密写入 SQLite；页面和查询接口不会返回密钥原文。推荐在 Semantica 主界面的“Documents → 模型配置”中维护。</p>
+            </div>
+          </div>
+        </div>
+
+        <details class="advanced">
+          <summary>查看或修改完整场景配置</summary>
+          <p>类型编码会成为图谱节点/关系的 <code>type</code>，正则用于无模型演示；LLM 模式会使用中文定义作为抽取约束。</p>
+          <textarea id="config-json" spellcheck="false"></textarea>
+        </details>
+
+        <div class="actions">
+          <button id="submit-button" type="submit">开始抽取</button>
+          <span id="status" class="status">等待上传</span>
+        </div>
+      </form>
+    </section>
+
+    <section id="results" class="results hidden">
+      <div class="metrics" id="metrics"></div>
+
+      <section class="panel">
+        <div class="section-title"><div><span class="step">02</span><h2>解析后的输入</h2></div></div>
+        <pre id="text-preview" class="text-preview"></pre>
+      </section>
+
+      <section class="panel">
+        <div class="section-title"><div><span class="step">03</span><h2>实体节点</h2></div></div>
+        <div class="table-wrap"><table><thead><tr><th>类型</th><th>实体</th><th>置信度</th><th>来源证据</th></tr></thead><tbody id="entity-body"></tbody></table></div>
+      </section>
+
+      <section class="panel">
+        <div class="section-title"><div><span class="step">04</span><h2>关系边</h2></div></div>
+        <div class="table-wrap"><table><thead><tr><th>起点</th><th>关系</th><th>终点</th><th>置信度</th><th>来源证据</th></tr></thead><tbody id="relation-body"></tbody></table></div>
+      </section>
+
+      <section class="panel export-panel">
+        <div>
+          <span class="step">05</span><h2>导出并接入 Semantica</h2>
+          <p>JSON 和 CSV 都符合当前 Explorer 导入接口。建议优先使用 JSON，它能保留完整证据数组。</p>
+        </div>
+        <div class="download-actions">
+          <a id="download-json" class="button secondary">下载 JSON</a>
+          <a id="download-csv" class="button secondary">下载 CSV</a>
+        </div>
+      </section>
+
+      <div id="warnings" class="warnings hidden"></div>
+    </section>
+  </main>
+  <script src="/static/app.js"></script>
+</body>
+</html>

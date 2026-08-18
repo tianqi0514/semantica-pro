@@ -1,0 +1,82 @@
+{
+  "demo_name": "采购合规审查与方案推演",
+  "configuration_note": "这是演示项目自己定义的业务配置，不是 Semantica 强制的文件格式，也不代表法律意见。",
+  "codebook": {
+    "procurement_methods": {
+      "open_tender": "公开招标",
+      "invited_tender": "邀请招标"
+    },
+    "supplier_risk_levels": {
+      "normal": "正常",
+      "high": "高风险"
+    }
+  },
+  "policies": [
+    {
+      "id": "POLICY-METHOD-001",
+      "name": "企业采购管理办法第12条（演示）",
+      "policy_type": "procurement_method",
+      "open_tender_threshold_cny": 2000000,
+      "meaning": "本演示假定：采购金额达到200万元时，应采用公开招标。"
+    },
+    {
+      "id": "POLICY-SUPPLIER-001",
+      "name": "供应商风险管理办法第8条（演示）",
+      "policy_type": "supplier_risk",
+      "blocked_risk_levels": [
+        "high"
+      ],
+      "meaning": "本演示假定：高风险供应商不得作为中标候选人。"
+    }
+  ],
+  "reasoning_rules": [
+    {
+      "id": "RULE-METHOD-001",
+      "name": "金额超阈值但未公开招标",
+      "policy_id": "POLICY-METHOD-001",
+      "expression": "IF plan_for_case(?plan, ?case) AND case_amount_band(?case, open_tender_required) AND candidate_method(?plan, invited_tender) THEN violation(?plan, method_not_allowed)",
+      "business_meaning": "当项目达到公开招标阈值，候选方案却使用邀请招标时，推导出采购方式不符合演示内控。"
+    },
+    {
+      "id": "RULE-SUPPLIER-001",
+      "name": "高风险供应商阻断",
+      "policy_id": "POLICY-SUPPLIER-001",
+      "expression": "IF candidate_supplier(?plan, ?supplier) AND supplier_risk(?supplier, high) THEN violation(?plan, high_risk_supplier)",
+      "business_meaning": "候选供应商的风险等级为 high 时，推导出供应商高风险问题。"
+    },
+    {
+      "id": "RULE-REVIEW-001",
+      "name": "违规事项转人工复核",
+      "policy_id": "POLICY-METHOD-001",
+      "expression": "IF violation(?plan, ?reason) THEN requires_manual_review(?plan, ?reason)",
+      "business_meaning": "只要存在一个违规事项，就同步推导出对应的人工复核要求。"
+    },
+    {
+      "id": "RULE-PASS-001",
+      "name": "通过核心规则的正向标记",
+      "policy_id": "POLICY-METHOD-001",
+      "expression": "IF candidate_method(?plan, open_tender) AND candidate_supplier(?plan, ?supplier) AND supplier_risk(?supplier, normal) THEN passes_core_rules(?plan)",
+      "business_meaning": "公开招标且供应商风险等级正常时，给方案加上通过本演示核心规则的标记。"
+    }
+  ],
+  "scoring": {
+    "scoring_note": "评分是演示项目的业务代码，不是 Semantica Reasoner 内置的决策模型。决策顺序为：先排除硬阻断，再优先选无违规方案，最后比较加权分。",
+    "weights": {
+      "compliance": 0.65,
+      "price": 0.2,
+      "delivery": 0.15
+    },
+    "violation_deductions": {
+      "method_not_allowed": 45,
+      "high_risk_supplier": 70
+    },
+    "hard_block_reasons": [
+      "high_risk_supplier"
+    ]
+  },
+  "precedent_search": {
+    "limit": 3,
+    "similarity_threshold": 0.15,
+    "implementation_note": "ContextGraph 当前的这个前例接口会对空格分词后的文本做 Jaccard 相似度；本演示因此有意使用空格分隔中文关键词。"
+  }
+}

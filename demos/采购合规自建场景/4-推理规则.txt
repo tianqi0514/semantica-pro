@@ -1,0 +1,1 @@
+IF decision_involves_supplier(?decision, ?supplier) AND supplier_has_risk_evidence(?supplier, ?notice) AND notice_severity(?notice, high) THEN flags_supplier(?decision, ?supplier)

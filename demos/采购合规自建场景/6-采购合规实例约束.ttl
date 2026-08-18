@@ -1,0 +1,109 @@
+@prefix pc: <https://demo.semantica.local/ontology/procurement-compliance#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+
+# 当前 Explorer 将 JSON 的 type 字符串转换为同名 RDF 类型，
+# 因此这里使用 pc:purchase_request、pc:supplier 等 JSON 类型映射目标。
+
+pc:ReviewDecisionDataShape a sh:NodeShape ;
+  sh:targetClass pc:decision ;
+  sh:property [
+    sh:path pc:reviews ;
+    sh:minCount 1 ;
+    sh:class pc:purchase_request ;
+    sh:message "审查结论必须关联至少一个采购申请。"@zh
+  ] ;
+  sh:property [
+    sh:path pc:flags_supplier ;
+    sh:class pc:supplier ;
+    sh:message "flags_supplier 的目标必须是供应商。"@zh
+  ] .
+
+pc:PurchaseRequestDataShape a sh:NodeShape ;
+  sh:targetClass pc:purchase_request ;
+  sh:property [
+    sh:path pc:amount_cny ;
+    sh:minCount 1 ;
+    sh:nodeKind sh:Literal ;
+    sh:message "采购申请必须填写采购金额。"@zh
+  ] ;
+  sh:property [
+    sh:path pc:procurement_method ;
+    sh:minCount 1 ;
+    sh:in ("公开招标" "邀请招标" "单一来源") ;
+    sh:message "采购方式必须使用规定枚举值。"@zh
+  ] ;
+  sh:property [
+    sh:path pc:receivedBid ;
+    sh:minCount 1 ;
+    sh:class pc:bid ;
+    sh:message "采购申请必须关联至少一份投标文件。"@zh
+  ] ;
+  sh:property [
+    sh:path pc:submittedBy ;
+    sh:minCount 1 ;
+    sh:class pc:person ;
+    sh:message "采购申请必须关联经办人。"@zh
+  ] .
+
+pc:BidDataShape a sh:NodeShape ;
+  sh:targetClass pc:bid ;
+  sh:property [
+    sh:path pc:submittedBy ;
+    sh:minCount 1 ;
+    sh:class pc:supplier ;
+    sh:message "投标文件必须关联提交该文件的供应商。"@zh
+  ] .
+
+pc:SupplierDataShape a sh:NodeShape ;
+  sh:targetClass pc:supplier ;
+  sh:property [
+    sh:path pc:supplier_no ;
+    sh:minCount 1 ;
+    sh:nodeKind sh:Literal ;
+    sh:message "供应商必须填写供应商编号。"@zh
+  ] ;
+  sh:property [
+    sh:path pc:hasRiskEvidence ;
+    sh:class pc:regulatory_notice ;
+    sh:message "供应商风险证据的目标必须是监管通报。"@zh
+  ] .
+
+pc:RegulatoryNoticeDataShape a sh:NodeShape ;
+  sh:targetClass pc:regulatory_notice ;
+  sh:property [
+    sh:path pc:severity ;
+    sh:minCount 1 ;
+    sh:in ("低" "中" "高") ;
+    sh:message "监管通报的严重程度必须是低、中或高。"@zh
+  ] ;
+  sh:property [
+    sh:path pc:status ;
+    sh:minCount 1 ;
+    sh:in ("有效" "失效") ;
+    sh:message "监管通报状态必须是有效或失效。"@zh
+  ] .
+
+pc:EvidenceDataShape a sh:NodeShape ;
+  sh:targetClass pc:document ;
+  sh:property [
+    sh:path pc:wasDerivedFrom ;
+    sh:minCount 1 ;
+    sh:class pc:purchase_request ;
+    sh:message "采购证明材料必须关联其来源采购申请。"@zh
+  ] .
+
+pc:PolicyDataShape a sh:NodeShape ;
+  sh:targetClass pc:policy ;
+  sh:property [
+    sh:path pc:threshold_cny ;
+    sh:minCount 1 ;
+    sh:nodeKind sh:Literal ;
+    sh:message "采购制度必须填写金额阈值。"@zh
+  ] ;
+  sh:property [
+    sh:path pc:required_method ;
+    sh:minCount 1 ;
+    sh:nodeKind sh:Literal ;
+    sh:message "采购制度必须填写要求的采购方式。"@zh
+  ] .

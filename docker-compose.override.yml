@@ -1,0 +1,14 @@
+services:
+  explorer:
+    build:
+      dockerfile: Dockerfile.cpu
+    environment:
+      # The bundled UI does not send X-API-Key headers. Anonymous access is
+      # safe here because the published port is restricted to this machine.
+      SEMANTICA_ALLOW_ANONYMOUS: "true"
+    ports: !override
+      - "127.0.0.1:8000:8000"
+
+  falkordb:
+    ports: !override
+      - "127.0.0.1:6379:6379"

@@ -1,0 +1,36 @@
+{
+  "metadata": {
+    "name": "监管黑名单实时增量",
+    "purpose": "现场演示增量导入、图谱更新和审计日志"
+  },
+  "nodes": [
+    {
+      "id": "NOTICE-2025-0619",
+      "type": "regulatory_notice",
+      "properties": {
+        "content": "监管通报：华辰数字科技列入采购观察名单",
+        "notice_no": "REG-2025-0619",
+        "publisher": "行业采购诚信协作平台",
+        "published_at": "2025-06-19T09:15:00+08:00",
+        "reason": "在其他采购项目中出现投标文件异常一致",
+        "severity": "高",
+        "embedding": [0.95, 0.90, 0.77, 0.05, 0.18, 0.34]
+      },
+      "valid_from": "2025-06-19T09:15:00+08:00"
+    }
+  ],
+  "edges": [
+    {
+      "id": "E-LIVE-001",
+      "source": "NOTICE-2025-0619",
+      "target": "SUP-001",
+      "type": "listsSupplier",
+      "weight": 1.0,
+      "properties": {
+        "content": "新增外部监管风险证据",
+        "source": "行业采购诚信协作平台"
+      },
+      "valid_from": "2025-06-19T09:15:00+08:00"
+    }
+  ]
+}

@@ -2,7 +2,10 @@ FROM semantica-knowledge-explorer:latest
 
 USER root
 
+ARG PYPI_INDEX_URL="https://pypi.org/simple"
+
 RUN pip install --no-cache-dir \
+    --index-url "${PYPI_INDEX_URL}" \
     "openai>=1.0.0" \
     "instructor>=1.15.3" \
     "ollama>=0.1.0" \

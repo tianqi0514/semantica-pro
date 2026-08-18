@@ -46,6 +46,8 @@ services:
     build:
       context: ../..
       dockerfile: document_extraction_module/Dockerfile
+      args:
+        PYPI_INDEX_URL: ${PYPI_INDEX_URL:-https://pypi.org/simple}
     image: semantica-pro-document-extractor:latest
     environment:
       DOCUMENT_EXTRACT_JOB_ROOT: /data/jobs

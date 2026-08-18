@@ -10,6 +10,7 @@ Create these files beside `docker-compose.yml`; do not commit them:
 - `.env`
   - `PUBLIC_PORT=9009`
   - `PUBLIC_ORIGIN=http://your-host:9009`
+  - Optional: `PYPI_INDEX_URL=https://your-nearby-pypi-mirror/simple`
 - `.htpasswd`
   - Generate with `openssl passwd -apr1` or `htpasswd`.
 

@@ -38,7 +38,11 @@ RUN pip install --no-cache-dir \
         --index-url https://download.pytorch.org/whl/cpu \
         "torch==2.13.0+cpu"
 
-RUN pip install --no-cache-dir ".[explorer,shacl]" \
+ARG PYPI_INDEX_URL="https://pypi.org/simple"
+
+RUN pip install --no-cache-dir \
+        --index-url "${PYPI_INDEX_URL}" \
+        ".[explorer,shacl]" \
     && chown -R semantica:semantica /app
 
 # Keep the frequently changing frontend in the last image layer so UI-only

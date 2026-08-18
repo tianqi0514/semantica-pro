@@ -1,0 +1,2365 @@
+{
+  "schema_version": "1.0",
+  "run": {
+    "scenario": "多场景联合抽取",
+    "method": "regex",
+    "provider": null,
+    "model": null,
+    "created_at": "2026-08-18T08:03:45.078068+00:00",
+    "batch": true,
+    "scenario_ids": [
+      "procurement-compliance",
+      "supplier-risk",
+      "contract-key-terms"
+    ],
+    "scenario_names": [
+      "采购合规审查",
+      "供应商风险画像",
+      "合同关键要素"
+    ],
+    "files_total": 3,
+    "files_succeeded": 3,
+    "files_failed": 0,
+    "template_runs_total": 9,
+    "template_runs_succeeded": 9,
+    "template_runs_failed": 0
+  },
+  "batch": {
+    "total": 9,
+    "succeeded": 9,
+    "failed": 0,
+    "files_total": 3,
+    "templates_total": 3,
+    "items": [
+      {
+        "index": 1,
+        "file_index": 1,
+        "source_name": "1-采购立项与评审记录.txt",
+        "scenario_id": "procurement-compliance",
+        "scenario_name": "采购合规审查",
+        "scenario_version": 1,
+        "status": "completed",
+        "statistics": {
+          "documents": 1,
+          "chunks": 1,
+          "chunks_processed": 1,
+          "entities": 13,
+          "relationships": 5,
+          "warnings": 0
+        }
+      },
+      {
+        "index": 2,
+        "file_index": 1,
+        "source_name": "1-采购立项与评审记录.txt",
+        "scenario_id": "supplier-risk",
+        "scenario_name": "供应商风险画像",
+        "scenario_version": 1,
+        "status": "completed",
+        "statistics": {
+          "documents": 1,
+          "chunks": 1,
+          "chunks_processed": 1,
+          "entities": 10,
+          "relationships": 0,
+          "warnings": 0
+        }
+      },
+      {
+        "index": 3,
+        "file_index": 1,
+        "source_name": "1-采购立项与评审记录.txt",
+        "scenario_id": "contract-key-terms",
+        "scenario_name": "合同关键要素",
+        "scenario_version": 1,
+        "status": "completed",
+        "statistics": {
+          "documents": 1,
+          "chunks": 1,
+          "chunks_processed": 1,
+          "entities": 7,
+          "relationships": 0,
+          "warnings": 0
+        }
+      },
+      {
+        "index": 4,
+        "file_index": 2,
+        "source_name": "2-供应商尽调与风险核查报告.txt",
+        "scenario_id": "procurement-compliance",
+        "scenario_name": "采购合规审查",
+        "scenario_version": 1,
+        "status": "completed",
+        "statistics": {
+          "documents": 1,
+          "chunks": 1,
+          "chunks_processed": 1,
+          "entities": 6,
+          "relationships": 1,
+          "warnings": 0
+        }
+      },
+      {
+        "index": 5,
+        "file_index": 2,
+        "source_name": "2-供应商尽调与风险核查报告.txt",
+        "scenario_id": "supplier-risk",
+        "scenario_name": "供应商风险画像",
+        "scenario_version": 1,
+        "status": "completed",
+        "statistics": {
+          "documents": 1,
+          "chunks": 1,
+          "chunks_processed": 1,
+          "entities": 16,
+          "relationships": 2,
+          "warnings": 0
+        }
+      },
+      {
+        "index": 6,
+        "file_index": 2,
+        "source_name": "2-供应商尽调与风险核查报告.txt",
+        "scenario_id": "contract-key-terms",
+        "scenario_name": "合同关键要素",
+        "scenario_version": 1,
+        "status": "completed",
+        "statistics": {
+          "documents": 1,
+          "chunks": 1,
+          "chunks_processed": 1,
+          "entities": 6,
+          "relationships": 0,
+          "warnings": 0
+        }
+      },
+      {
+        "index": 7,
+        "file_index": 3,
+        "source_name": "3-采购合同关键条款确认稿.txt",
+        "scenario_id": "procurement-compliance",
+        "scenario_name": "采购合规审查",
+        "scenario_version": 1,
+        "status": "completed",
+        "statistics": {
+          "documents": 1,
+          "chunks": 1,
+          "chunks_processed": 1,
+          "entities": 5,
+          "relationships": 0,
+          "warnings": 0
+        }
+      },
+      {
+        "index": 8,
+        "file_index": 3,
+        "source_name": "3-采购合同关键条款确认稿.txt",
+        "scenario_id": "supplier-risk",
+        "scenario_name": "供应商风险画像",
+        "scenario_version": 1,
+        "status": "completed",
+        "statistics": {
+          "documents": 1,
+          "chunks": 1,
+          "chunks_processed": 1,
+          "entities": 5,
+          "relationships": 0,
+          "warnings": 0
+        }
+      },
+      {
+        "index": 9,
+        "file_index": 3,
+        "source_name": "3-采购合同关键条款确认稿.txt",
+        "scenario_id": "contract-key-terms",
+        "scenario_name": "合同关键要素",
+        "scenario_version": 1,
+        "status": "completed",
+        "statistics": {
+          "documents": 1,
+          "chunks": 1,
+          "chunks_processed": 1,
+          "entities": 19,
+          "relationships": 0,
+          "warnings": 0
+        }
+      }
+    ]
+  },
+  "scenarios": [
+    {
+      "id": "procurement-compliance",
+      "name": "采购合规审查",
+      "version": 1,
+      "runs_succeeded": 3,
+      "runs_failed": 0,
+      "entities": 20,
+      "relationships": 6
+    },
+    {
+      "id": "supplier-risk",
+      "name": "供应商风险画像",
+      "version": 1,
+      "runs_succeeded": 3,
+      "runs_failed": 0,
+      "entities": 26,
+      "relationships": 2
+    },
+    {
+      "id": "contract-key-terms",
+      "name": "合同关键要素",
+      "version": 1,
+      "runs_succeeded": 3,
+      "runs_failed": 0,
+      "entities": 28,
+      "relationships": 0
+    }
+  ],
+  "documents": [
+    {
+      "id": "doc_dffcad73d78c1d75",
+      "name": "1-采购立项与评审记录.txt",
+      "character_count": 393,
+      "chunk_count": 1,
+      "text_preview": "华东智造集团采购立项与评审记录\n\n项目名称：2026年智能仓储系统采购项目\n采购人：华东智造集团有限公司\n代理机构：上海恒信招标代理有限公司\n供应商：上海云启科技有限公司\n项目负责人：王强\n预算金额：人民币150万元\n立项日期：2026年7月15日\n评审日期：2026年8月12日\n\n本项目采用公开招标方式实施，共有三家供应商提交投标文件。评审专家：李明。评审委员会依据技术方案、实施周期、售后服务和报价进行综合评分。\n\n上海云启科技有限公司中标2026年智能仓储系统采购项目。\n上海云启科技有限公司以人民币128万元中标。\n\n经补充核查，李明是上海云启科技有限公司的股东。评审专家李明未在评审前主动披露该持股关系。上海云启科技有限公司存在关联关系未披露风险。\n\n2026年智能仓储系统采购项目适用《华东智造集团采购管理办法》。采购部门要求合规人员复核专家回避程序，并形成书面处理意见。",
+      "metadata": {
+        "file_path": "/Users/tianqi/Documents/New project 2/semantica/document_extraction_module/demo/采购合规审查完整演示/10-上传材料/1-采购立项与评审记录.txt",
+        "encoding": "utf-8",
+        "size": 394,
+        "format": "txt"
+      },
+      "scenario_refs": [
+        {
+          "id": "procurement-compliance",
+          "name": "采购合规审查",
+          "version": 1
+        },
+        {
+          "id": "supplier-risk",
+          "name": "供应商风险画像",
+          "version": 1
+        },
+        {
+          "id": "contract-key-terms",
+          "name": "合同关键要素",
+          "version": 1
+        }
+      ]
+    },
+    {
+      "id": "doc_f71895663baa2ff8",
+      "name": "2-供应商尽调与风险核查报告.txt",
+      "character_count": 333,
+      "chunk_count": 1,
+      "text_preview": "供应商尽调与风险核查报告\n\n供应商：上海云启科技有限公司\n法定代表人：赵敏\n股东：李明\n核查日期：2026年8月10日\n\n上海云启科技有限公司是一家智能仓储软件与自动化设备集成供应商。李明是上海云启科技有限公司的股东。公开信息核查范围包括工商登记与法院公开信息。本次采购评审材料中未披露李明与该公司的持股关系，形成关联关系未披露风险。\n\n供应商：宁波汇达设备有限公司\n法定代表人：周海\n核查日期：2026年8月10日\n\n宁波汇达设备有限公司\n名单生效日期：2026年5月6日\n宁波汇达设备有限公司被列入供应商禁入名单。名单有效期尚未届满，不得参与本集团新的采购项目。\n\n核查结论：上海云启科技有限公司需要补充利益冲突说明；宁波汇达设备有限公司不具备本次采购准入资格。",
+      "metadata": {
+        "file_path": "/Users/tianqi/Documents/New project 2/semantica/document_extraction_module/demo/采购合规审查完整演示/10-上传材料/2-供应商尽调与风险核查报告.txt",
+        "encoding": "utf-8",
+        "size": 334,
+        "format": "txt"
+      },
+      "scenario_refs": [
+        {
+          "id": "procurement-compliance",
+          "name": "采购合规审查",
+          "version": 1
+        },
+        {
+          "id": "supplier-risk",
+          "name": "供应商风险画像",
+          "version": 1
+        },
+        {
+          "id": "contract-key-terms",
+          "name": "合同关键要素",
+          "version": 1
+        }
+      ]
+    },
+    {
+      "id": "doc_de6362cdbaaf1a10",
+      "name": "3-采购合同关键条款确认稿.txt",
+      "character_count": 475,
+      "chunk_count": 1,
+      "text_preview": "采购合同关键条款确认稿\n\n合同名称：2026年智能仓储系统采购合同\n合同编号：HDZZ-CG-2026-0818\n甲方：华东智造集团有限公司\n乙方：上海云启科技有限公司\n甲方联系人：王强\n乙方联系人：陈晨\n合同金额：人民币128万元\n签订日期：2026年8月18日\n生效日期：2026年8月18日\n计划交付日期：2026年11月30日\n\n付款方式：合同生效后支付合同金额的30%，系统到货并完成初验后支付40%，最终验收合格后支付剩余30%。\n\n交付条件：乙方必须在2026年11月30日前完成智能仓储系统的软件部署、设备安装和接口联调。\n\n验收条款：甲方应当在收到乙方验收申请后十个工作日内组织验收，乙方负责对验收发现的问题进行整改。\n\n保密条款：双方必须对项目数据、系统接口和采购价格承担保密义务，未经对方书面同意不得向第三方披露。\n\n违约责任：乙方逾期交付的，每逾期一日应当按合同金额的0.05%支付违约金；逾期超过三十日，甲方有权解除合同。\n\n特别约定：乙方应当在签约前提交完整的利益冲突声明。若隐瞒关联关系，甲方有权暂停付款并启动合规复核。",
+      "metadata": {
+        "file_path": "/Users/tianqi/Documents/New project 2/semantica/document_extraction_module/demo/采购合规审查完整演示/10-上传材料/3-采购合同关键条款确认稿.txt",
+        "encoding": "utf-8",
+        "size": 476,
+        "format": "txt"
+      },
+      "scenario_refs": [
+        {
+          "id": "procurement-compliance",
+          "name": "采购合规审查",
+          "version": 1
+        },
+        {
+          "id": "supplier-risk",
+          "name": "供应商风险画像",
+          "version": 1
+        },
+        {
+          "id": "contract-key-terms",
+          "name": "合同关键要素",
+          "version": 1
+        }
+      ]
+    }
+  ],
+  "entities": [
+    {
+      "id": "ent_9d90e12f80a02cf4",
+      "type": "AMOUNT",
+      "text": "人民币128万元",
+      "confidence": 0.75,
+      "metadata": {
+        "document_id": "doc_dffcad73d78c1d75",
+        "source_file": "1-采购立项与评审记录.txt",
+        "extraction_method": "regex",
+        "evidence": [
+          {
+            "chunk_id": "chunk-0000",
+            "start": 251,
+            "end": 259,
+            "text": "施周期、售后服务和报价进行综合评分。\n\n上海云启科技有限公司中标2026年智能仓储系统采购项目。\n上海云启科技有限公司以人民币128万元中标。\n\n经补充核查，李明是上海云启科技有限公司的股东。评审专家李明未在评审前主动披露该持股关系。上海云启科技有限公司存"
+          },
+          {
+            "chunk_id": "chunk-0000",
+            "start": 108,
+            "end": 116,
+            "text": "026-0818\n甲方：华东智造集团有限公司\n乙方：上海云启科技有限公司\n甲方联系人：王强\n乙方联系人：陈晨\n合同金额：人民币128万元\n签订日期：2026年8月18日\n生效日期：2026年8月18日\n计划交付日期：2026年11月30日\n\n付款方式：合同"
+          }
+        ],
+        "scenario_refs": [
+          {
+            "id": "procurement-compliance",
+            "name": "采购合规审查",
+            "version": 1
+          },
+          {
+            "id": "contract-key-terms",
+            "name": "合同关键要素",
+            "version": 1
+          }
+        ],
+        "source_files": [
+          "1-采购立项与评审记录.txt",
+          "3-采购合同关键条款确认稿.txt"
+        ],
+        "document_ids": [
+          "doc_dffcad73d78c1d75",
+          "doc_de6362cdbaaf1a10"
+        ]
+      }
+    },
+    {
+      "id": "ent_3452f5e6ea6ac823",
+      "type": "AMOUNT",
+      "text": "人民币150万元",
+      "confidence": 0.75,
+      "metadata": {
+        "document_id": "doc_dffcad73d78c1d75",
+        "source_file": "1-采购立项与评审记录.txt",
+        "extraction_method": "regex",
+        "evidence": [
+          {
+            "chunk_id": "chunk-0000",
+            "start": 100,
+            "end": 108,
+            "text": "人：华东智造集团有限公司\n代理机构：上海恒信招标代理有限公司\n供应商：上海云启科技有限公司\n项目负责人：王强\n预算金额：人民币150万元\n立项日期：2026年7月15日\n评审日期：2026年8月12日\n\n本项目采用公开招标方式实施，共有三家供应商提交投标文"
+          }
+        ],
+        "scenario_refs": [
+          {
+            "id": "procurement-compliance",
+            "name": "采购合规审查",
+            "version": 1
+          },
+          {
+            "id": "contract-key-terms",
+            "name": "合同关键要素",
+            "version": 1
+          }
+        ],
+        "source_files": [
+          "1-采购立项与评审记录.txt"
+        ],
+        "document_ids": [
+          "doc_dffcad73d78c1d75"
+        ]
+      }
+    },
+    {
+      "id": "ent_c5d15a03cf5f2734",
+      "type": "BLACKLIST",
+      "text": "供应商禁入名单",
+      "confidence": 0.75,
+      "metadata": {
+        "document_id": "doc_f71895663baa2ff8",
+        "source_file": "2-供应商尽调与风险核查报告.txt",
+        "extraction_method": "regex",
+        "evidence": [
+          {
+            "chunk_id": "chunk-0000",
+            "start": 251,
+            "end": 258,
+            "text": "海\n核查日期：2026年8月10日\n\n宁波汇达设备有限公司\n名单生效日期：2026年5月6日\n宁波汇达设备有限公司被列入供应商禁入名单。名单有效期尚未届满，不得参与本集团新的采购项目。\n\n核查结论：上海云启科技有限公司需要补充利益冲突说明；宁波汇达设备有"
+          }
+        ],
+        "scenario_refs": [
+          {
+            "id": "procurement-compliance",
+            "name": "采购合规审查",
+            "version": 1
+          },
+          {
+            "id": "supplier-risk",
+            "name": "供应商风险画像",
+            "version": 1
+          }
+        ],
+        "source_files": [
+          "2-供应商尽调与风险核查报告.txt"
+        ],
+        "document_ids": [
+          "doc_f71895663baa2ff8"
+        ]
+      }
+    },
+    {
+      "id": "ent_f589993be5d34796",
+      "type": "CLAUSE",
+      "text": "乙方必须在2026年11月30日前完成智能仓储系统的软件部署、设备安装和接口联调",
+      "confidence": 0.75,
+      "metadata": {
+        "document_id": "doc_de6362cdbaaf1a10",
+        "source_file": "3-采购合同关键条款确认稿.txt",
+        "extraction_method": "regex",
+        "evidence": [
+          {
+            "chunk_id": "chunk-0000",
+            "start": 228,
+            "end": 268,
+            "text": "付款方式：合同生效后支付合同金额的30%，系统到货并完成初验后支付40%，最终验收合格后支付剩余30%。\n\n交付条件：乙方必须在2026年11月30日前完成智能仓储系统的软件部署、设备安装和接口联调。\n\n验收条款：甲方应当在收到乙方验收申请后十个工作日内组织验收，乙方负责对验收发现的问题进行整改。\n\n保密条款：双方必"
+          }
+        ],
+        "scenario_refs": [
+          {
+            "id": "contract-key-terms",
+            "name": "合同关键要素",
+            "version": 1
+          }
+        ],
+        "source_files": [
+          "3-采购合同关键条款确认稿.txt"
+        ],
+        "document_ids": [
+          "doc_de6362cdbaaf1a10"
+        ]
+      }
+    },
+    {
+      "id": "ent_30869cb9187d1298",
+      "type": "CLAUSE",
+      "text": "乙方逾期交付的，每逾期一日应当按合同金额的0.05%支付违约金；逾期超过三十日，甲方有权解除合同",
+      "confidence": 0.75,
+      "metadata": {
+        "document_id": "doc_de6362cdbaaf1a10",
+        "source_file": "3-采购合同关键条款确认稿.txt",
+        "extraction_method": "regex",
+        "evidence": [
+          {
+            "chunk_id": "chunk-0000",
+            "start": 375,
+            "end": 423,
+            "text": "整改。\n\n保密条款：双方必须对项目数据、系统接口和采购价格承担保密义务，未经对方书面同意不得向第三方披露。\n\n违约责任：乙方逾期交付的，每逾期一日应当按合同金额的0.05%支付违约金；逾期超过三十日，甲方有权解除合同。\n\n特别约定：乙方应当在签约前提交完整的利益冲突声明。若隐瞒关联关系，甲方有权暂停付款并启动合规复核。"
+          }
+        ],
+        "scenario_refs": [
+          {
+            "id": "contract-key-terms",
+            "name": "合同关键要素",
+            "version": 1
+          }
+        ],
+        "source_files": [
+          "3-采购合同关键条款确认稿.txt"
+        ],
+        "document_ids": [
+          "doc_de6362cdbaaf1a10"
+        ]
+      }
+    },
+    {
+      "id": "ent_1d2c5dced75d2b72",
+      "type": "CLAUSE",
+      "text": "双方必须对项目数据、系统接口和采购价格承担保密义务，未经对方书面同意不得向第三方披露",
+      "confidence": 0.75,
+      "metadata": {
+        "document_id": "doc_de6362cdbaaf1a10",
+        "source_file": "3-采购合同关键条款确认稿.txt",
+        "extraction_method": "regex",
+        "evidence": [
+          {
+            "chunk_id": "chunk-0000",
+            "start": 325,
+            "end": 367,
+            "text": "口联调。\n\n验收条款：甲方应当在收到乙方验收申请后十个工作日内组织验收，乙方负责对验收发现的问题进行整改。\n\n保密条款：双方必须对项目数据、系统接口和采购价格承担保密义务，未经对方书面同意不得向第三方披露。\n\n违约责任：乙方逾期交付的，每逾期一日应当按合同金额的0.05%支付违约金；逾期超过三十日，甲方有权解除合同。\n\n特"
+          }
+        ],
+        "scenario_refs": [
+          {
+            "id": "contract-key-terms",
+            "name": "合同关键要素",
+            "version": 1
+          }
+        ],
+        "source_files": [
+          "3-采购合同关键条款确认稿.txt"
+        ],
+        "document_ids": [
+          "doc_de6362cdbaaf1a10"
+        ]
+      }
+    },
+    {
+      "id": "ent_c82fe0e4f217352f",
+      "type": "CLAUSE",
+      "text": "合同生效后支付合同金额的30%，系统到货并完成初验后支付40%，最终验收合格后支付剩余30%",
+      "confidence": 0.75,
+      "metadata": {
+        "document_id": "doc_de6362cdbaaf1a10",
+        "source_file": "3-采购合同关键条款确认稿.txt",
+        "extraction_method": "regex",
+        "evidence": [
+          {
+            "chunk_id": "chunk-0000",
+            "start": 174,
+            "end": 220,
+            "text": "万元\n签订日期：2026年8月18日\n生效日期：2026年8月18日\n计划交付日期：2026年11月30日\n\n付款方式：合同生效后支付合同金额的30%，系统到货并完成初验后支付40%，最终验收合格后支付剩余30%。\n\n交付条件：乙方必须在2026年11月30日前完成智能仓储系统的软件部署、设备安装和接口联调。\n\n验收条款：甲方应当"
+          }
+        ],
+        "scenario_refs": [
+          {
+            "id": "contract-key-terms",
+            "name": "合同关键要素",
+            "version": 1
+          }
+        ],
+        "source_files": [
+          "3-采购合同关键条款确认稿.txt"
+        ],
+        "document_ids": [
+          "doc_de6362cdbaaf1a10"
+        ]
+      }
+    },
+    {
+      "id": "ent_0df8947b2a6ac79f",
+      "type": "CLAUSE",
+      "text": "甲方应当在收到乙方验收申请后十个工作日内组织验收，乙方负责对验收发现的问题进行整改",
+      "confidence": 0.75,
+      "metadata": {
+        "document_id": "doc_de6362cdbaaf1a10",
+        "source_file": "3-采购合同关键条款确认稿.txt",
+        "extraction_method": "regex",
+        "evidence": [
+          {
+            "chunk_id": "chunk-0000",
+            "start": 276,
+            "end": 317,
+            "text": "余30%。\n\n交付条件：乙方必须在2026年11月30日前完成智能仓储系统的软件部署、设备安装和接口联调。\n\n验收条款：甲方应当在收到乙方验收申请后十个工作日内组织验收，乙方负责对验收发现的问题进行整改。\n\n保密条款：双方必须对项目数据、系统接口和采购价格承担保密义务，未经对方书面同意不得向第三方披露。\n\n违约责任：乙方"
+          }
+        ],
+        "scenario_refs": [
+          {
+            "id": "contract-key-terms",
+            "name": "合同关键要素",
+            "version": 1
+          }
+        ],
+        "source_files": [
+          "3-采购合同关键条款确认稿.txt"
+        ],
+        "document_ids": [
+          "doc_de6362cdbaaf1a10"
+        ]
+      }
+    },
+    {
+      "id": "ent_45060fcd83abca83",
+      "type": "CONTRACT",
+      "text": "2026年智能仓储系统采购合同",
+      "confidence": 0.75,
+      "metadata": {
+        "document_id": "doc_de6362cdbaaf1a10",
+        "source_file": "3-采购合同关键条款确认稿.txt",
+        "extraction_method": "regex",
+        "evidence": [
+          {
+            "chunk_id": "chunk-0000",
+            "start": 18,
+            "end": 33,
+            "text": "采购合同关键条款确认稿\n\n合同名称：2026年智能仓储系统采购合同\n合同编号：HDZZ-CG-2026-0818\n甲方：华东智造集团有限公司\n乙方：上海云启科技有限公司\n甲方联系人：王强"
+          }
+        ],
+        "scenario_refs": [
+          {
+            "id": "contract-key-terms",
+            "name": "合同关键要素",
+            "version": 1
+          }
+        ],
+        "source_files": [
+          "3-采购合同关键条款确认稿.txt"
+        ],
+        "document_ids": [
+          "doc_de6362cdbaaf1a10"
+        ]
+      }
+    },
+    {
+      "id": "ent_91970ba71940c61b",
+      "type": "CONTRACT",
+      "text": "HDZZ-CG-2026-0818",
+      "confidence": 0.75,
+      "metadata": {
+        "document_id": "doc_de6362cdbaaf1a10",
+        "source_file": "3-采购合同关键条款确认稿.txt",
+        "extraction_method": "regex",
+        "evidence": [
+          {
+            "chunk_id": "chunk-0000",
+            "start": 39,
+            "end": 56,
+            "text": "采购合同关键条款确认稿\n\n合同名称：2026年智能仓储系统采购合同\n合同编号：HDZZ-CG-2026-0818\n甲方：华东智造集团有限公司\n乙方：上海云启科技有限公司\n甲方联系人：王强\n乙方联系人：陈晨\n合同金额：人民币128万元"
+          }
+        ],
+        "scenario_refs": [
+          {
+            "id": "contract-key-terms",
+            "name": "合同关键要素",
+            "version": 1
+          }
+        ],
+        "source_files": [
+          "3-采购合同关键条款确认稿.txt"
+        ],
+        "document_ids": [
+          "doc_de6362cdbaaf1a10"
+        ]
+      }
+    },
+    {
+      "id": "ent_c4f26c0c78b9759d",
+      "type": "DATE",
+      "text": "2026年11月30日",
+      "confidence": 0.75,
+      "metadata": {
+        "document_id": "doc_de6362cdbaaf1a10",
+        "source_file": "3-采购合同关键条款确认稿.txt",
+        "extraction_method": "regex",
+        "evidence": [
+          {
+            "chunk_id": "chunk-0000",
+            "start": 156,
+            "end": 167,
+            "text": "联系人：陈晨\n合同金额：人民币128万元\n签订日期：2026年8月18日\n生效日期：2026年8月18日\n计划交付日期：2026年11月30日\n\n付款方式：合同生效后支付合同金额的30%，系统到货并完成初验后支付40%，最终验收合格后支付剩余30%。\n\n交付条件"
+          },
+          {
+            "chunk_id": "chunk-0000",
+            "start": 233,
+            "end": 244,
+            "text": "：合同生效后支付合同金额的30%，系统到货并完成初验后支付40%，最终验收合格后支付剩余30%。\n\n交付条件：乙方必须在2026年11月30日前完成智能仓储系统的软件部署、设备安装和接口联调。\n\n验收条款：甲方应当在收到乙方验收申请后十个工作日内组织验收，乙方负"
+          }
+        ],
+        "scenario_refs": [
+          {
+            "id": "procurement-compliance",
+            "name": "采购合规审查",
+            "version": 1
+          },
+          {
+            "id": "supplier-risk",
+            "name": "供应商风险画像",
+            "version": 1
+          },
+          {
+            "id": "contract-key-terms",
+            "name": "合同关键要素",
+            "version": 1
+          }
+        ],
+        "source_files": [
+          "3-采购合同关键条款确认稿.txt"
+        ],
+        "document_ids": [
+          "doc_de6362cdbaaf1a10"
+        ]
+      }
+    },
+    {
+      "id": "ent_af60ffb72299a16a",
+      "type": "DATE",
+      "text": "2026年5月6日",
+      "confidence": 0.75,
+      "metadata": {
+        "document_id": "doc_f71895663baa2ff8",
+        "source_file": "2-供应商尽调与风险核查报告.txt",
+        "extraction_method": "regex",
+        "evidence": [
+          {
+            "chunk_id": "chunk-0000",
+            "start": 228,
+            "end": 237,
+            "text": "供应商：宁波汇达设备有限公司\n法定代表人：周海\n核查日期：2026年8月10日\n\n宁波汇达设备有限公司\n名单生效日期：2026年5月6日\n宁波汇达设备有限公司被列入供应商禁入名单。名单有效期尚未届满，不得参与本集团新的采购项目。\n\n核查结论：上海云启科技有"
+          }
+        ],
+        "scenario_refs": [
+          {
+            "id": "procurement-compliance",
+            "name": "采购合规审查",
+            "version": 1
+          },
+          {
+            "id": "supplier-risk",
+            "name": "供应商风险画像",
+            "version": 1
+          },
+          {
+            "id": "contract-key-terms",
+            "name": "合同关键要素",
+            "version": 1
+          }
+        ],
+        "source_files": [
+          "2-供应商尽调与风险核查报告.txt"
+        ],
+        "document_ids": [
+          "doc_f71895663baa2ff8"
+        ]
+      }
+    },
+    {
+      "id": "ent_eed28076eec25eb2",
+      "type": "DATE",
+      "text": "2026年7月15日",
+      "confidence": 0.75,
+      "metadata": {
+        "document_id": "doc_dffcad73d78c1d75",
+        "source_file": "1-采购立项与评审记录.txt",
+        "extraction_method": "regex",
+        "evidence": [
+          {
+            "chunk_id": "chunk-0000",
+            "start": 114,
+            "end": 124,
+            "text": "理机构：上海恒信招标代理有限公司\n供应商：上海云启科技有限公司\n项目负责人：王强\n预算金额：人民币150万元\n立项日期：2026年7月15日\n评审日期：2026年8月12日\n\n本项目采用公开招标方式实施，共有三家供应商提交投标文件。评审专家：李明。评审委员会依"
+          }
+        ],
+        "scenario_refs": [
+          {
+            "id": "procurement-compliance",
+            "name": "采购合规审查",
+            "version": 1
+          },
+          {
+            "id": "supplier-risk",
+            "name": "供应商风险画像",
+            "version": 1
+          },
+          {
+            "id": "contract-key-terms",
+            "name": "合同关键要素",
+            "version": 1
+          }
+        ],
+        "source_files": [
+          "1-采购立项与评审记录.txt"
+        ],
+        "document_ids": [
+          "doc_dffcad73d78c1d75"
+        ]
+      }
+    },
+    {
+      "id": "ent_d91ae0e2db7dd676",
+      "type": "DATE",
+      "text": "2026年8月10日",
+      "confidence": 0.75,
+      "metadata": {
+        "document_id": "doc_f71895663baa2ff8",
+        "source_file": "2-供应商尽调与风险核查报告.txt",
+        "extraction_method": "regex",
+        "evidence": [
+          {
+            "chunk_id": "chunk-0000",
+            "start": 49,
+            "end": 59,
+            "text": "供应商尽调与风险核查报告\n\n供应商：上海云启科技有限公司\n法定代表人：赵敏\n股东：李明\n核查日期：2026年8月10日\n\n上海云启科技有限公司是一家智能仓储软件与自动化设备集成供应商。李明是上海云启科技有限公司的股东。公开信息核查范围包括"
+          },
+          {
+            "chunk_id": "chunk-0000",
+            "start": 198,
+            "end": 208,
+            "text": "料中未披露李明与该公司的持股关系，形成关联关系未披露风险。\n\n供应商：宁波汇达设备有限公司\n法定代表人：周海\n核查日期：2026年8月10日\n\n宁波汇达设备有限公司\n名单生效日期：2026年5月6日\n宁波汇达设备有限公司被列入供应商禁入名单。名单有效期尚未届满"
+          }
+        ],
+        "scenario_refs": [
+          {
+            "id": "procurement-compliance",
+            "name": "采购合规审查",
+            "version": 1
+          },
+          {
+            "id": "supplier-risk",
+            "name": "供应商风险画像",
+            "version": 1
+          },
+          {
+            "id": "contract-key-terms",
+            "name": "合同关键要素",
+            "version": 1
+          }
+        ],
+        "source_files": [
+          "2-供应商尽调与风险核查报告.txt"
+        ],
+        "document_ids": [
+          "doc_f71895663baa2ff8"
+        ]
+      }
+    },
+    {
+      "id": "ent_b925863a50d2852e",
+      "type": "DATE",
+      "text": "2026年8月12日",
+      "confidence": 0.75,
+      "metadata": {
+        "document_id": "doc_dffcad73d78c1d75",
+        "source_file": "1-采购立项与评审记录.txt",
+        "extraction_method": "regex",
+        "evidence": [
+          {
+            "chunk_id": "chunk-0000",
+            "start": 130,
+            "end": 140,
+            "text": "供应商：上海云启科技有限公司\n项目负责人：王强\n预算金额：人民币150万元\n立项日期：2026年7月15日\n评审日期：2026年8月12日\n\n本项目采用公开招标方式实施，共有三家供应商提交投标文件。评审专家：李明。评审委员会依据技术方案、实施周期、售后服务和"
+          }
+        ],
+        "scenario_refs": [
+          {
+            "id": "procurement-compliance",
+            "name": "采购合规审查",
+            "version": 1
+          },
+          {
+            "id": "supplier-risk",
+            "name": "供应商风险画像",
+            "version": 1
+          },
+          {
+            "id": "contract-key-terms",
+            "name": "合同关键要素",
+            "version": 1
+          }
+        ],
+        "source_files": [
+          "1-采购立项与评审记录.txt"
+        ],
+        "document_ids": [
+          "doc_dffcad73d78c1d75"
+        ]
+      }
+    },
+    {
+      "id": "ent_998e91fe4b05f74c",
+      "type": "DATE",
+      "text": "2026年8月18日",
+      "confidence": 0.75,
+      "metadata": {
+        "document_id": "doc_de6362cdbaaf1a10",
+        "source_file": "3-采购合同关键条款确认稿.txt",
+        "extraction_method": "regex",
+        "evidence": [
+          {
+            "chunk_id": "chunk-0000",
+            "start": 122,
+            "end": 132,
+            "text": "智造集团有限公司\n乙方：上海云启科技有限公司\n甲方联系人：王强\n乙方联系人：陈晨\n合同金额：人民币128万元\n签订日期：2026年8月18日\n生效日期：2026年8月18日\n计划交付日期：2026年11月30日\n\n付款方式：合同生效后支付合同金额的30%，系统"
+          },
+          {
+            "chunk_id": "chunk-0000",
+            "start": 138,
+            "end": 148,
+            "text": "科技有限公司\n甲方联系人：王强\n乙方联系人：陈晨\n合同金额：人民币128万元\n签订日期：2026年8月18日\n生效日期：2026年8月18日\n计划交付日期：2026年11月30日\n\n付款方式：合同生效后支付合同金额的30%，系统到货并完成初验后支付40%，最终"
+          }
+        ],
+        "scenario_refs": [
+          {
+            "id": "procurement-compliance",
+            "name": "采购合规审查",
+            "version": 1
+          },
+          {
+            "id": "supplier-risk",
+            "name": "供应商风险画像",
+            "version": 1
+          },
+          {
+            "id": "contract-key-terms",
+            "name": "合同关键要素",
+            "version": 1
+          }
+        ],
+        "source_files": [
+          "3-采购合同关键条款确认稿.txt"
+        ],
+        "document_ids": [
+          "doc_de6362cdbaaf1a10"
+        ]
+      }
+    },
+    {
+      "id": "ent_cf314deec53e23d2",
+      "type": "OBLIGATION",
+      "text": "应当在收到乙方验收申请后十个工作日内组织验收，乙方负责对验收发现的问题进行整改",
+      "confidence": 0.75,
+      "metadata": {
+        "document_id": "doc_de6362cdbaaf1a10",
+        "source_file": "3-采购合同关键条款确认稿.txt",
+        "extraction_method": "regex",
+        "evidence": [
+          {
+            "chunk_id": "chunk-0000",
+            "start": 278,
+            "end": 317,
+            "text": "0%。\n\n交付条件：乙方必须在2026年11月30日前完成智能仓储系统的软件部署、设备安装和接口联调。\n\n验收条款：甲方应当在收到乙方验收申请后十个工作日内组织验收，乙方负责对验收发现的问题进行整改。\n\n保密条款：双方必须对项目数据、系统接口和采购价格承担保密义务，未经对方书面同意不得向第三方披露。\n\n违约责任：乙方"
+          }
+        ],
+        "scenario_refs": [
+          {
+            "id": "contract-key-terms",
+            "name": "合同关键要素",
+            "version": 1
+          }
+        ],
+        "source_files": [
+          "3-采购合同关键条款确认稿.txt"
+        ],
+        "document_ids": [
+          "doc_de6362cdbaaf1a10"
+        ]
+      }
+    },
+    {
+      "id": "ent_1c67b055b10aed13",
+      "type": "OBLIGATION",
+      "text": "应当在签约前提交完整的利益冲突声明",
+      "confidence": 0.75,
+      "metadata": {
+        "document_id": "doc_de6362cdbaaf1a10",
+        "source_file": "3-采购合同关键条款确认稿.txt",
+        "extraction_method": "regex",
+        "evidence": [
+          {
+            "chunk_id": "chunk-0000",
+            "start": 433,
+            "end": 450,
+            "text": "任：乙方逾期交付的，每逾期一日应当按合同金额的0.05%支付违约金；逾期超过三十日，甲方有权解除合同。\n\n特别约定：乙方应当在签约前提交完整的利益冲突声明。若隐瞒关联关系，甲方有权暂停付款并启动合规复核。"
+          }
+        ],
+        "scenario_refs": [
+          {
+            "id": "contract-key-terms",
+            "name": "合同关键要素",
+            "version": 1
+          }
+        ],
+        "source_files": [
+          "3-采购合同关键条款确认稿.txt"
+        ],
+        "document_ids": [
+          "doc_de6362cdbaaf1a10"
+        ]
+      }
+    },
+    {
+      "id": "ent_50d4d4782f72dd01",
+      "type": "OBLIGATION",
+      "text": "应当按合同金额的0.05%支付违约金",
+      "confidence": 0.75,
+      "metadata": {
+        "document_id": "doc_de6362cdbaaf1a10",
+        "source_file": "3-采购合同关键条款确认稿.txt",
+        "extraction_method": "regex",
+        "evidence": [
+          {
+            "chunk_id": "chunk-0000",
+            "start": 388,
+            "end": 406,
+            "text": "须对项目数据、系统接口和采购价格承担保密义务，未经对方书面同意不得向第三方披露。\n\n违约责任：乙方逾期交付的，每逾期一日应当按合同金额的0.05%支付违约金；逾期超过三十日，甲方有权解除合同。\n\n特别约定：乙方应当在签约前提交完整的利益冲突声明。若隐瞒关联关系，甲方有权暂停付"
+          }
+        ],
+        "scenario_refs": [
+          {
+            "id": "contract-key-terms",
+            "name": "合同关键要素",
+            "version": 1
+          }
+        ],
+        "source_files": [
+          "3-采购合同关键条款确认稿.txt"
+        ],
+        "document_ids": [
+          "doc_de6362cdbaaf1a10"
+        ]
+      }
+    },
+    {
+      "id": "ent_68e97e3ece6f1193",
+      "type": "OBLIGATION",
+      "text": "必须在2026年11月30日前完成智能仓储系统的软件部署、设备安装和接口联调",
+      "confidence": 0.75,
+      "metadata": {
+        "document_id": "doc_de6362cdbaaf1a10",
+        "source_file": "3-采购合同关键条款确认稿.txt",
+        "extraction_method": "regex",
+        "evidence": [
+          {
+            "chunk_id": "chunk-0000",
+            "start": 230,
+            "end": 268,
+            "text": "款方式：合同生效后支付合同金额的30%，系统到货并完成初验后支付40%，最终验收合格后支付剩余30%。\n\n交付条件：乙方必须在2026年11月30日前完成智能仓储系统的软件部署、设备安装和接口联调。\n\n验收条款：甲方应当在收到乙方验收申请后十个工作日内组织验收，乙方负责对验收发现的问题进行整改。\n\n保密条款：双方必"
+          }
+        ],
+        "scenario_refs": [
+          {
+            "id": "contract-key-terms",
+            "name": "合同关键要素",
+            "version": 1
+          }
+        ],
+        "source_files": [
+          "3-采购合同关键条款确认稿.txt"
+        ],
+        "document_ids": [
+          "doc_de6362cdbaaf1a10"
+        ]
+      }
+    },
+    {
+      "id": "ent_f4a70eb498692bc8",
+      "type": "OBLIGATION",
+      "text": "必须对项目数据、系统接口和采购价格承担保密义务，未经对方书面同意不得向第三方披露",
+      "confidence": 0.75,
+      "metadata": {
+        "document_id": "doc_de6362cdbaaf1a10",
+        "source_file": "3-采购合同关键条款确认稿.txt",
+        "extraction_method": "regex",
+        "evidence": [
+          {
+            "chunk_id": "chunk-0000",
+            "start": 327,
+            "end": 367,
+            "text": "调。\n\n验收条款：甲方应当在收到乙方验收申请后十个工作日内组织验收，乙方负责对验收发现的问题进行整改。\n\n保密条款：双方必须对项目数据、系统接口和采购价格承担保密义务，未经对方书面同意不得向第三方披露。\n\n违约责任：乙方逾期交付的，每逾期一日应当按合同金额的0.05%支付违约金；逾期超过三十日，甲方有权解除合同。\n\n特"
+          }
+        ],
+        "scenario_refs": [
+          {
+            "id": "contract-key-terms",
+            "name": "合同关键要素",
+            "version": 1
+          }
+        ],
+        "source_files": [
+          "3-采购合同关键条款确认稿.txt"
+        ],
+        "document_ids": [
+          "doc_de6362cdbaaf1a10"
+        ]
+      }
+    },
+    {
+      "id": "ent_55f53ac95b600f85",
+      "type": "OBLIGATION",
+      "text": "负责人：王强",
+      "confidence": 0.75,
+      "metadata": {
+        "document_id": "doc_dffcad73d78c1d75",
+        "source_file": "1-采购立项与评审记录.txt",
+        "extraction_method": "regex",
+        "evidence": [
+          {
+            "chunk_id": "chunk-0000",
+            "start": 88,
+            "end": 94,
+            "text": "能仓储系统采购项目\n采购人：华东智造集团有限公司\n代理机构：上海恒信招标代理有限公司\n供应商：上海云启科技有限公司\n项目负责人：王强\n预算金额：人民币150万元\n立项日期：2026年7月15日\n评审日期：2026年8月12日\n\n本项目采用公开招标方式实"
+          }
+        ],
+        "scenario_refs": [
+          {
+            "id": "contract-key-terms",
+            "name": "合同关键要素",
+            "version": 1
+          }
+        ],
+        "source_files": [
+          "1-采购立项与评审记录.txt"
+        ],
+        "document_ids": [
+          "doc_dffcad73d78c1d75"
+        ]
+      }
+    },
+    {
+      "id": "ent_557dc3a9da74b9fe",
+      "type": "ORGANIZATION",
+      "text": "2026年智能仓储系统采购项目适用《华东智造集团",
+      "confidence": 0.75,
+      "metadata": {
+        "document_id": "doc_dffcad73d78c1d75",
+        "source_file": "1-采购立项与评审记录.txt",
+        "extraction_method": "regex",
+        "evidence": [
+          {
+            "chunk_id": "chunk-0000",
+            "start": 332,
+            "end": 356,
+            "text": "是上海云启科技有限公司的股东。评审专家李明未在评审前主动披露该持股关系。上海云启科技有限公司存在关联关系未披露风险。\n\n2026年智能仓储系统采购项目适用《华东智造集团采购管理办法》。采购部门要求合规人员复核专家回避程序，并形成书面处理意见。"
+          }
+        ],
+        "scenario_refs": [
+          {
+            "id": "supplier-risk",
+            "name": "供应商风险画像",
+            "version": 1
+          }
+        ],
+        "source_files": [
+          "1-采购立项与评审记录.txt"
+        ],
+        "document_ids": [
+          "doc_dffcad73d78c1d75"
+        ]
+      }
+    },
+    {
+      "id": "ent_e84912469fc94887",
+      "type": "ORGANIZATION",
+      "text": "上海云启科技有限公司",
+      "confidence": 0.75,
+      "metadata": {
+        "document_id": "doc_dffcad73d78c1d75",
+        "source_file": "1-采购立项与评审记录.txt",
+        "extraction_method": "regex",
+        "evidence": [
+          {
+            "chunk_id": "chunk-0000",
+            "start": 75,
+            "end": 85,
+            "text": "项目名称：2026年智能仓储系统采购项目\n采购人：华东智造集团有限公司\n代理机构：上海恒信招标代理有限公司\n供应商：上海云启科技有限公司\n项目负责人：王强\n预算金额：人民币150万元\n立项日期：2026年7月15日\n评审日期：2026年8月12日\n\n本项目"
+          },
+          {
+            "chunk_id": "chunk-0000",
+            "start": 211,
+            "end": 221,
+            "text": "方式实施，共有三家供应商提交投标文件。评审专家：李明。评审委员会依据技术方案、实施周期、售后服务和报价进行综合评分。\n\n上海云启科技有限公司中标2026年智能仓储系统采购项目。\n上海云启科技有限公司以人民币128万元中标。\n\n经补充核查，李明是上海云启科技有限"
+          },
+          {
+            "chunk_id": "chunk-0000",
+            "start": 240,
+            "end": 250,
+            "text": "委员会依据技术方案、实施周期、售后服务和报价进行综合评分。\n\n上海云启科技有限公司中标2026年智能仓储系统采购项目。\n上海云启科技有限公司以人民币128万元中标。\n\n经补充核查，李明是上海云启科技有限公司的股东。评审专家李明未在评审前主动披露该持股关系。上海"
+          },
+          {
+            "chunk_id": "chunk-0000",
+            "start": 308,
+            "end": 318,
+            "text": "公司以人民币128万元中标。\n\n经补充核查，李明是上海云启科技有限公司的股东。评审专家李明未在评审前主动披露该持股关系。上海云启科技有限公司存在关联关系未披露风险。\n\n2026年智能仓储系统采购项目适用《华东智造集团采购管理办法》。采购部门要求合规人员复核专家"
+          },
+          {
+            "chunk_id": "chunk-0000",
+            "start": 18,
+            "end": 28,
+            "text": "供应商尽调与风险核查报告\n\n供应商：上海云启科技有限公司\n法定代表人：赵敏\n股东：李明\n核查日期：2026年8月10日\n\n上海云启科技有限公司是一家智能仓储软件与自动化设备集成"
+          },
+          {
+            "chunk_id": "chunk-0000",
+            "start": 61,
+            "end": 71,
+            "text": "应商尽调与风险核查报告\n\n供应商：上海云启科技有限公司\n法定代表人：赵敏\n股东：李明\n核查日期：2026年8月10日\n\n上海云启科技有限公司是一家智能仓储软件与自动化设备集成供应商。李明是上海云启科技有限公司的股东。公开信息核查范围包括工商登记与法院公开信息。"
+          },
+          {
+            "chunk_id": "chunk-0000",
+            "start": 74,
+            "end": 84,
+            "text": "同名称：2026年智能仓储系统采购合同\n合同编号：HDZZ-CG-2026-0818\n甲方：华东智造集团有限公司\n乙方：上海云启科技有限公司\n甲方联系人：王强\n乙方联系人：陈晨\n合同金额：人民币128万元\n签订日期：2026年8月18日\n生效日期：2026年8"
+          }
+        ],
+        "scenario_refs": [
+          {
+            "id": "procurement-compliance",
+            "name": "采购合规审查",
+            "version": 1
+          },
+          {
+            "id": "supplier-risk",
+            "name": "供应商风险画像",
+            "version": 1
+          },
+          {
+            "id": "contract-key-terms",
+            "name": "合同关键要素",
+            "version": 1
+          }
+        ],
+        "source_files": [
+          "1-采购立项与评审记录.txt",
+          "2-供应商尽调与风险核查报告.txt",
+          "3-采购合同关键条款确认稿.txt"
+        ],
+        "document_ids": [
+          "doc_dffcad73d78c1d75",
+          "doc_f71895663baa2ff8",
+          "doc_de6362cdbaaf1a10"
+        ]
+      }
+    },
+    {
+      "id": "ent_0b627723ab49fbec",
+      "type": "ORGANIZATION",
+      "text": "上海恒信招标代理有限公司",
+      "confidence": 0.75,
+      "metadata": {
+        "document_id": "doc_dffcad73d78c1d75",
+        "source_file": "1-采购立项与评审记录.txt",
+        "extraction_method": "regex",
+        "evidence": [
+          {
+            "chunk_id": "chunk-0000",
+            "start": 58,
+            "end": 70,
+            "text": "华东智造集团采购立项与评审记录\n\n项目名称：2026年智能仓储系统采购项目\n采购人：华东智造集团有限公司\n代理机构：上海恒信招标代理有限公司\n供应商：上海云启科技有限公司\n项目负责人：王强\n预算金额：人民币150万元\n立项日期：2026年7月15日\n评审日期："
+          }
+        ],
+        "scenario_refs": [
+          {
+            "id": "procurement-compliance",
+            "name": "采购合规审查",
+            "version": 1
+          }
+        ],
+        "source_files": [
+          "1-采购立项与评审记录.txt"
+        ],
+        "document_ids": [
+          "doc_dffcad73d78c1d75"
+        ]
+      }
+    },
+    {
+      "id": "ent_644ec70a93c2579c",
+      "type": "ORGANIZATION",
+      "text": "不得参与本集团",
+      "confidence": 0.75,
+      "metadata": {
+        "document_id": "doc_f71895663baa2ff8",
+        "source_file": "2-供应商尽调与风险核查报告.txt",
+        "extraction_method": "regex",
+        "evidence": [
+          {
+            "chunk_id": "chunk-0000",
+            "start": 269,
+            "end": 276,
+            "text": "宁波汇达设备有限公司\n名单生效日期：2026年5月6日\n宁波汇达设备有限公司被列入供应商禁入名单。名单有效期尚未届满，不得参与本集团新的采购项目。\n\n核查结论：上海云启科技有限公司需要补充利益冲突说明；宁波汇达设备有限公司不具备本次采购准入资格。"
+          }
+        ],
+        "scenario_refs": [
+          {
+            "id": "supplier-risk",
+            "name": "供应商风险画像",
+            "version": 1
+          }
+        ],
+        "source_files": [
+          "2-供应商尽调与风险核查报告.txt"
+        ],
+        "document_ids": [
+          "doc_f71895663baa2ff8"
+        ]
+      }
+    },
+    {
+      "id": "ent_f9a4e03bfe239a73",
+      "type": "ORGANIZATION",
+      "text": "乙方：上海云启科技有限公司",
+      "confidence": 0.75,
+      "metadata": {
+        "document_id": "doc_de6362cdbaaf1a10",
+        "source_file": "3-采购合同关键条款确认稿.txt",
+        "extraction_method": "regex",
+        "evidence": [
+          {
+            "chunk_id": "chunk-0000",
+            "start": 71,
+            "end": 84,
+            "text": "合同名称：2026年智能仓储系统采购合同\n合同编号：HDZZ-CG-2026-0818\n甲方：华东智造集团有限公司\n乙方：上海云启科技有限公司\n甲方联系人：王强\n乙方联系人：陈晨\n合同金额：人民币128万元\n签订日期：2026年8月18日\n生效日期：2026年8"
+          }
+        ],
+        "scenario_refs": [
+          {
+            "id": "supplier-risk",
+            "name": "供应商风险画像",
+            "version": 1
+          }
+        ],
+        "source_files": [
+          "3-采购合同关键条款确认稿.txt"
+        ],
+        "document_ids": [
+          "doc_de6362cdbaaf1a10"
+        ]
+      }
+    },
+    {
+      "id": "ent_4073a97742b82df1",
+      "type": "ORGANIZATION",
+      "text": "代理机构：上海恒信招标代理有限公司",
+      "confidence": 0.75,
+      "metadata": {
+        "document_id": "doc_dffcad73d78c1d75",
+        "source_file": "1-采购立项与评审记录.txt",
+        "extraction_method": "regex",
+        "evidence": [
+          {
+            "chunk_id": "chunk-0000",
+            "start": 53,
+            "end": 70,
+            "text": "华东智造集团采购立项与评审记录\n\n项目名称：2026年智能仓储系统采购项目\n采购人：华东智造集团有限公司\n代理机构：上海恒信招标代理有限公司\n供应商：上海云启科技有限公司\n项目负责人：王强\n预算金额：人民币150万元\n立项日期：2026年7月15日\n评审日期："
+          }
+        ],
+        "scenario_refs": [
+          {
+            "id": "supplier-risk",
+            "name": "供应商风险画像",
+            "version": 1
+          }
+        ],
+        "source_files": [
+          "1-采购立项与评审记录.txt"
+        ],
+        "document_ids": [
+          "doc_dffcad73d78c1d75"
+        ]
+      }
+    },
+    {
+      "id": "ent_55bfc8aa8562722f",
+      "type": "ORGANIZATION",
+      "text": "供应商：上海云启科技有限公司",
+      "confidence": 0.75,
+      "metadata": {
+        "document_id": "doc_dffcad73d78c1d75",
+        "source_file": "1-采购立项与评审记录.txt",
+        "extraction_method": "regex",
+        "evidence": [
+          {
+            "chunk_id": "chunk-0000",
+            "start": 71,
+            "end": 85,
+            "text": "评审记录\n\n项目名称：2026年智能仓储系统采购项目\n采购人：华东智造集团有限公司\n代理机构：上海恒信招标代理有限公司\n供应商：上海云启科技有限公司\n项目负责人：王强\n预算金额：人民币150万元\n立项日期：2026年7月15日\n评审日期：2026年8月12日\n\n本项目"
+          },
+          {
+            "chunk_id": "chunk-0000",
+            "start": 14,
+            "end": 28,
+            "text": "供应商尽调与风险核查报告\n\n供应商：上海云启科技有限公司\n法定代表人：赵敏\n股东：李明\n核查日期：2026年8月10日\n\n上海云启科技有限公司是一家智能仓储软件与自动化设备集成"
+          }
+        ],
+        "scenario_refs": [
+          {
+            "id": "supplier-risk",
+            "name": "供应商风险画像",
+            "version": 1
+          }
+        ],
+        "source_files": [
+          "1-采购立项与评审记录.txt",
+          "2-供应商尽调与风险核查报告.txt"
+        ],
+        "document_ids": [
+          "doc_dffcad73d78c1d75",
+          "doc_f71895663baa2ff8"
+        ]
+      }
+    },
+    {
+      "id": "ent_495e36633f47020e",
+      "type": "ORGANIZATION",
+      "text": "供应商：宁波汇达设备有限公司",
+      "confidence": 0.75,
+      "metadata": {
+        "document_id": "doc_f71895663baa2ff8",
+        "source_file": "2-供应商尽调与风险核查报告.txt",
+        "extraction_method": "regex",
+        "evidence": [
+          {
+            "chunk_id": "chunk-0000",
+            "start": 169,
+            "end": 183,
+            "text": "公开信息核查范围包括工商登记与法院公开信息。本次采购评审材料中未披露李明与该公司的持股关系，形成关联关系未披露风险。\n\n供应商：宁波汇达设备有限公司\n法定代表人：周海\n核查日期：2026年8月10日\n\n宁波汇达设备有限公司\n名单生效日期：2026年5月6日\n宁波汇达设"
+          }
+        ],
+        "scenario_refs": [
+          {
+            "id": "supplier-risk",
+            "name": "供应商风险画像",
+            "version": 1
+          }
+        ],
+        "source_files": [
+          "2-供应商尽调与风险核查报告.txt"
+        ],
+        "document_ids": [
+          "doc_f71895663baa2ff8"
+        ]
+      }
+    },
+    {
+      "id": "ent_b4f0b4d2b3d52ad6",
+      "type": "ORGANIZATION",
+      "text": "华东智造集团",
+      "confidence": 0.75,
+      "metadata": {
+        "document_id": "doc_dffcad73d78c1d75",
+        "source_file": "1-采购立项与评审记录.txt",
+        "extraction_method": "regex",
+        "evidence": [
+          {
+            "chunk_id": "chunk-0000",
+            "start": 0,
+            "end": 6,
+            "text": "华东智造集团采购立项与评审记录\n\n项目名称：2026年智能仓储系统采购项目\n采购人：华东智造集团有限公司\n代理机构：上海恒信招标代理"
+          }
+        ],
+        "scenario_refs": [
+          {
+            "id": "supplier-risk",
+            "name": "供应商风险画像",
+            "version": 1
+          }
+        ],
+        "source_files": [
+          "1-采购立项与评审记录.txt"
+        ],
+        "document_ids": [
+          "doc_dffcad73d78c1d75"
+        ]
+      }
+    },
+    {
+      "id": "ent_921d1f681390ac0d",
+      "type": "ORGANIZATION",
+      "text": "华东智造集团有限公司",
+      "confidence": 0.75,
+      "metadata": {
+        "document_id": "doc_dffcad73d78c1d75",
+        "source_file": "1-采购立项与评审记录.txt",
+        "extraction_method": "regex",
+        "evidence": [
+          {
+            "chunk_id": "chunk-0000",
+            "start": 42,
+            "end": 52,
+            "text": "华东智造集团采购立项与评审记录\n\n项目名称：2026年智能仓储系统采购项目\n采购人：华东智造集团有限公司\n代理机构：上海恒信招标代理有限公司\n供应商：上海云启科技有限公司\n项目负责人：王强\n预算金额：人民币150万元\n立项日"
+          },
+          {
+            "chunk_id": "chunk-0000",
+            "start": 60,
+            "end": 70,
+            "text": "采购合同关键条款确认稿\n\n合同名称：2026年智能仓储系统采购合同\n合同编号：HDZZ-CG-2026-0818\n甲方：华东智造集团有限公司\n乙方：上海云启科技有限公司\n甲方联系人：王强\n乙方联系人：陈晨\n合同金额：人民币128万元\n签订日期：2026年8月1"
+          }
+        ],
+        "scenario_refs": [
+          {
+            "id": "procurement-compliance",
+            "name": "采购合规审查",
+            "version": 1
+          },
+          {
+            "id": "contract-key-terms",
+            "name": "合同关键要素",
+            "version": 1
+          }
+        ],
+        "source_files": [
+          "1-采购立项与评审记录.txt",
+          "3-采购合同关键条款确认稿.txt"
+        ],
+        "document_ids": [
+          "doc_dffcad73d78c1d75",
+          "doc_de6362cdbaaf1a10"
+        ]
+      }
+    },
+    {
+      "id": "ent_2afcdb7060fac284",
+      "type": "ORGANIZATION",
+      "text": "宁波汇达设备有限公司",
+      "confidence": 0.75,
+      "metadata": {
+        "document_id": "doc_f71895663baa2ff8",
+        "source_file": "2-供应商尽调与风险核查报告.txt",
+        "extraction_method": "regex",
+        "evidence": [
+          {
+            "chunk_id": "chunk-0000",
+            "start": 173,
+            "end": 183,
+            "text": "核查范围包括工商登记与法院公开信息。本次采购评审材料中未披露李明与该公司的持股关系，形成关联关系未披露风险。\n\n供应商：宁波汇达设备有限公司\n法定代表人：周海\n核查日期：2026年8月10日\n\n宁波汇达设备有限公司\n名单生效日期：2026年5月6日\n宁波汇达设"
+          },
+          {
+            "chunk_id": "chunk-0000",
+            "start": 210,
+            "end": 220,
+            "text": "持股关系，形成关联关系未披露风险。\n\n供应商：宁波汇达设备有限公司\n法定代表人：周海\n核查日期：2026年8月10日\n\n宁波汇达设备有限公司\n名单生效日期：2026年5月6日\n宁波汇达设备有限公司被列入供应商禁入名单。名单有效期尚未届满，不得参与本集团新的采购"
+          },
+          {
+            "chunk_id": "chunk-0000",
+            "start": 238,
+            "end": 248,
+            "text": "备有限公司\n法定代表人：周海\n核查日期：2026年8月10日\n\n宁波汇达设备有限公司\n名单生效日期：2026年5月6日\n宁波汇达设备有限公司被列入供应商禁入名单。名单有效期尚未届满，不得参与本集团新的采购项目。\n\n核查结论：上海云启科技有限公司需要补充利益冲突"
+          },
+          {
+            "chunk_id": "chunk-0000",
+            "start": 311,
+            "end": 321,
+            "text": "供应商禁入名单。名单有效期尚未届满，不得参与本集团新的采购项目。\n\n核查结论：上海云启科技有限公司需要补充利益冲突说明；宁波汇达设备有限公司不具备本次采购准入资格。"
+          }
+        ],
+        "scenario_refs": [
+          {
+            "id": "procurement-compliance",
+            "name": "采购合规审查",
+            "version": 1
+          },
+          {
+            "id": "supplier-risk",
+            "name": "供应商风险画像",
+            "version": 1
+          },
+          {
+            "id": "contract-key-terms",
+            "name": "合同关键要素",
+            "version": 1
+          }
+        ],
+        "source_files": [
+          "2-供应商尽调与风险核查报告.txt"
+        ],
+        "document_ids": [
+          "doc_f71895663baa2ff8"
+        ]
+      }
+    },
+    {
+      "id": "ent_793d9d77c70b2083",
+      "type": "ORGANIZATION",
+      "text": "本次采购评审材料中未披露李明与该公司",
+      "confidence": 0.75,
+      "metadata": {
+        "document_id": "doc_f71895663baa2ff8",
+        "source_file": "2-供应商尽调与风险核查报告.txt",
+        "extraction_method": "regex",
+        "evidence": [
+          {
+            "chunk_id": "chunk-0000",
+            "start": 131,
+            "end": 149,
+            "text": "是一家智能仓储软件与自动化设备集成供应商。李明是上海云启科技有限公司的股东。公开信息核查范围包括工商登记与法院公开信息。本次采购评审材料中未披露李明与该公司的持股关系，形成关联关系未披露风险。\n\n供应商：宁波汇达设备有限公司\n法定代表人：周海\n核查日期：2026年8月10日"
+          }
+        ],
+        "scenario_refs": [
+          {
+            "id": "supplier-risk",
+            "name": "供应商风险画像",
+            "version": 1
+          }
+        ],
+        "source_files": [
+          "2-供应商尽调与风险核查报告.txt"
+        ],
+        "document_ids": [
+          "doc_f71895663baa2ff8"
+        ]
+      }
+    },
+    {
+      "id": "ent_c1a4b6463ca97876",
+      "type": "ORGANIZATION",
+      "text": "李明是上海云启科技有限公司",
+      "confidence": 0.75,
+      "metadata": {
+        "document_id": "doc_dffcad73d78c1d75",
+        "source_file": "1-采购立项与评审记录.txt",
+        "extraction_method": "regex",
+        "evidence": [
+          {
+            "chunk_id": "chunk-0000",
+            "start": 270,
+            "end": 283,
+            "text": "上海云启科技有限公司中标2026年智能仓储系统采购项目。\n上海云启科技有限公司以人民币128万元中标。\n\n经补充核查，李明是上海云启科技有限公司的股东。评审专家李明未在评审前主动披露该持股关系。上海云启科技有限公司存在关联关系未披露风险。\n\n2026年智能仓储系统"
+          },
+          {
+            "chunk_id": "chunk-0000",
+            "start": 92,
+            "end": 105,
+            "text": "表人：赵敏\n股东：李明\n核查日期：2026年8月10日\n\n上海云启科技有限公司是一家智能仓储软件与自动化设备集成供应商。李明是上海云启科技有限公司的股东。公开信息核查范围包括工商登记与法院公开信息。本次采购评审材料中未披露李明与该公司的持股关系，形成关联关系未披露风"
+          }
+        ],
+        "scenario_refs": [
+          {
+            "id": "supplier-risk",
+            "name": "供应商风险画像",
+            "version": 1
+          }
+        ],
+        "source_files": [
+          "1-采购立项与评审记录.txt",
+          "2-供应商尽调与风险核查报告.txt"
+        ],
+        "document_ids": [
+          "doc_dffcad73d78c1d75",
+          "doc_f71895663baa2ff8"
+        ]
+      }
+    },
+    {
+      "id": "ent_914f43f342c39fac",
+      "type": "ORGANIZATION",
+      "text": "核查结论：上海云启科技有限公司",
+      "confidence": 0.75,
+      "metadata": {
+        "document_id": "doc_f71895663baa2ff8",
+        "source_file": "2-供应商尽调与风险核查报告.txt",
+        "extraction_method": "regex",
+        "evidence": [
+          {
+            "chunk_id": "chunk-0000",
+            "start": 285,
+            "end": 300,
+            "text": "日期：2026年5月6日\n宁波汇达设备有限公司被列入供应商禁入名单。名单有效期尚未届满，不得参与本集团新的采购项目。\n\n核查结论：上海云启科技有限公司需要补充利益冲突说明；宁波汇达设备有限公司不具备本次采购准入资格。"
+          }
+        ],
+        "scenario_refs": [
+          {
+            "id": "supplier-risk",
+            "name": "供应商风险画像",
+            "version": 1
+          }
+        ],
+        "source_files": [
+          "2-供应商尽调与风险核查报告.txt"
+        ],
+        "document_ids": [
+          "doc_f71895663baa2ff8"
+        ]
+      }
+    },
+    {
+      "id": "ent_438e78d80abbdb75",
+      "type": "ORGANIZATION",
+      "text": "甲方：华东智造集团有限公司",
+      "confidence": 0.75,
+      "metadata": {
+        "document_id": "doc_de6362cdbaaf1a10",
+        "source_file": "3-采购合同关键条款确认稿.txt",
+        "extraction_method": "regex",
+        "evidence": [
+          {
+            "chunk_id": "chunk-0000",
+            "start": 57,
+            "end": 70,
+            "text": "采购合同关键条款确认稿\n\n合同名称：2026年智能仓储系统采购合同\n合同编号：HDZZ-CG-2026-0818\n甲方：华东智造集团有限公司\n乙方：上海云启科技有限公司\n甲方联系人：王强\n乙方联系人：陈晨\n合同金额：人民币128万元\n签订日期：2026年8月1"
+          }
+        ],
+        "scenario_refs": [
+          {
+            "id": "supplier-risk",
+            "name": "供应商风险画像",
+            "version": 1
+          }
+        ],
+        "source_files": [
+          "3-采购合同关键条款确认稿.txt"
+        ],
+        "document_ids": [
+          "doc_de6362cdbaaf1a10"
+        ]
+      }
+    },
+    {
+      "id": "ent_28ddc9e075483fba",
+      "type": "ORGANIZATION",
+      "text": "采购人：华东智造集团有限公司",
+      "confidence": 0.75,
+      "metadata": {
+        "document_id": "doc_dffcad73d78c1d75",
+        "source_file": "1-采购立项与评审记录.txt",
+        "extraction_method": "regex",
+        "evidence": [
+          {
+            "chunk_id": "chunk-0000",
+            "start": 38,
+            "end": 52,
+            "text": "华东智造集团采购立项与评审记录\n\n项目名称：2026年智能仓储系统采购项目\n采购人：华东智造集团有限公司\n代理机构：上海恒信招标代理有限公司\n供应商：上海云启科技有限公司\n项目负责人：王强\n预算金额：人民币150万元\n立项日"
+          }
+        ],
+        "scenario_refs": [
+          {
+            "id": "supplier-risk",
+            "name": "供应商风险画像",
+            "version": 1
+          }
+        ],
+        "source_files": [
+          "1-采购立项与评审记录.txt"
+        ],
+        "document_ids": [
+          "doc_dffcad73d78c1d75"
+        ]
+      }
+    },
+    {
+      "id": "ent_284077198c01fa9d",
+      "type": "PERSON",
+      "text": "周海",
+      "confidence": 0.75,
+      "metadata": {
+        "document_id": "doc_f71895663baa2ff8",
+        "source_file": "2-供应商尽调与风险核查报告.txt",
+        "extraction_method": "regex",
+        "evidence": [
+          {
+            "chunk_id": "chunk-0000",
+            "start": 190,
+            "end": 192,
+            "text": "。本次采购评审材料中未披露李明与该公司的持股关系，形成关联关系未披露风险。\n\n供应商：宁波汇达设备有限公司\n法定代表人：周海\n核查日期：2026年8月10日\n\n宁波汇达设备有限公司\n名单生效日期：2026年5月6日\n宁波汇达设备有限公司被列入供"
+          }
+        ],
+        "scenario_refs": [
+          {
+            "id": "supplier-risk",
+            "name": "供应商风险画像",
+            "version": 1
+          },
+          {
+            "id": "contract-key-terms",
+            "name": "合同关键要素",
+            "version": 1
+          }
+        ],
+        "source_files": [
+          "2-供应商尽调与风险核查报告.txt"
+        ],
+        "document_ids": [
+          "doc_f71895663baa2ff8"
+        ]
+      }
+    },
+    {
+      "id": "ent_f060920594b0c736",
+      "type": "PERSON",
+      "text": "李明",
+      "confidence": 0.75,
+      "metadata": {
+        "document_id": "doc_dffcad73d78c1d75",
+        "source_file": "1-采购立项与评审记录.txt",
+        "extraction_method": "regex",
+        "evidence": [
+          {
+            "chunk_id": "chunk-0000",
+            "start": 175,
+            "end": 177,
+            "text": "026年7月15日\n评审日期：2026年8月12日\n\n本项目采用公开招标方式实施，共有三家供应商提交投标文件。评审专家：李明。评审委员会依据技术方案、实施周期、售后服务和报价进行综合评分。\n\n上海云启科技有限公司中标2026年智能仓储系统采购项"
+          },
+          {
+            "chunk_id": "chunk-0000",
+            "start": 41,
+            "end": 43,
+            "text": "供应商尽调与风险核查报告\n\n供应商：上海云启科技有限公司\n法定代表人：赵敏\n股东：李明\n核查日期：2026年8月10日\n\n上海云启科技有限公司是一家智能仓储软件与自动化设备集成供应商。李明是上海云启科技有限"
+          }
+        ],
+        "scenario_refs": [
+          {
+            "id": "procurement-compliance",
+            "name": "采购合规审查",
+            "version": 1
+          },
+          {
+            "id": "supplier-risk",
+            "name": "供应商风险画像",
+            "version": 1
+          }
+        ],
+        "source_files": [
+          "1-采购立项与评审记录.txt",
+          "2-供应商尽调与风险核查报告.txt"
+        ],
+        "document_ids": [
+          "doc_dffcad73d78c1d75",
+          "doc_f71895663baa2ff8"
+        ]
+      }
+    },
+    {
+      "id": "ent_74de3a68ed746de0",
+      "type": "PERSON",
+      "text": "李明未在评审",
+      "confidence": 0.75,
+      "metadata": {
+        "document_id": "doc_dffcad73d78c1d75",
+        "source_file": "1-采购立项与评审记录.txt",
+        "extraction_method": "regex",
+        "evidence": [
+          {
+            "chunk_id": "chunk-0000",
+            "start": 291,
+            "end": 297,
+            "text": "储系统采购项目。\n上海云启科技有限公司以人民币128万元中标。\n\n经补充核查，李明是上海云启科技有限公司的股东。评审专家李明未在评审前主动披露该持股关系。上海云启科技有限公司存在关联关系未披露风险。\n\n2026年智能仓储系统采购项目适用《华东智造集团采"
+          }
+        ],
+        "scenario_refs": [
+          {
+            "id": "procurement-compliance",
+            "name": "采购合规审查",
+            "version": 1
+          }
+        ],
+        "source_files": [
+          "1-采购立项与评审记录.txt"
+        ],
+        "document_ids": [
+          "doc_dffcad73d78c1d75"
+        ]
+      }
+    },
+    {
+      "id": "ent_a3d3802ae31a8b9a",
+      "type": "PERSON",
+      "text": "王强",
+      "confidence": 0.75,
+      "metadata": {
+        "document_id": "doc_dffcad73d78c1d75",
+        "source_file": "1-采购立项与评审记录.txt",
+        "extraction_method": "regex",
+        "evidence": [
+          {
+            "chunk_id": "chunk-0000",
+            "start": 92,
+            "end": 94,
+            "text": "统采购项目\n采购人：华东智造集团有限公司\n代理机构：上海恒信招标代理有限公司\n供应商：上海云启科技有限公司\n项目负责人：王强\n预算金额：人民币150万元\n立项日期：2026年7月15日\n评审日期：2026年8月12日\n\n本项目采用公开招标方式实"
+          },
+          {
+            "chunk_id": "chunk-0000",
+            "start": 91,
+            "end": 93,
+            "text": "合同\n合同编号：HDZZ-CG-2026-0818\n甲方：华东智造集团有限公司\n乙方：上海云启科技有限公司\n甲方联系人：王强\n乙方联系人：陈晨\n合同金额：人民币128万元\n签订日期：2026年8月18日\n生效日期：2026年8月18日\n计划交付"
+          }
+        ],
+        "scenario_refs": [
+          {
+            "id": "procurement-compliance",
+            "name": "采购合规审查",
+            "version": 1
+          },
+          {
+            "id": "contract-key-terms",
+            "name": "合同关键要素",
+            "version": 1
+          }
+        ],
+        "source_files": [
+          "1-采购立项与评审记录.txt",
+          "3-采购合同关键条款确认稿.txt"
+        ],
+        "document_ids": [
+          "doc_dffcad73d78c1d75",
+          "doc_de6362cdbaaf1a10"
+        ]
+      }
+    },
+    {
+      "id": "ent_17dcf1980adc5172",
+      "type": "PERSON",
+      "text": "赵敏",
+      "confidence": 0.75,
+      "metadata": {
+        "document_id": "doc_f71895663baa2ff8",
+        "source_file": "2-供应商尽调与风险核查报告.txt",
+        "extraction_method": "regex",
+        "evidence": [
+          {
+            "chunk_id": "chunk-0000",
+            "start": 35,
+            "end": 37,
+            "text": "供应商尽调与风险核查报告\n\n供应商：上海云启科技有限公司\n法定代表人：赵敏\n股东：李明\n核查日期：2026年8月10日\n\n上海云启科技有限公司是一家智能仓储软件与自动化设备集成供应商。李明是上海"
+          }
+        ],
+        "scenario_refs": [
+          {
+            "id": "supplier-risk",
+            "name": "供应商风险画像",
+            "version": 1
+          },
+          {
+            "id": "contract-key-terms",
+            "name": "合同关键要素",
+            "version": 1
+          }
+        ],
+        "source_files": [
+          "2-供应商尽调与风险核查报告.txt"
+        ],
+        "document_ids": [
+          "doc_f71895663baa2ff8"
+        ]
+      }
+    },
+    {
+      "id": "ent_37eb95a5b263c90a",
+      "type": "PERSON",
+      "text": "陈晨",
+      "confidence": 0.75,
+      "metadata": {
+        "document_id": "doc_de6362cdbaaf1a10",
+        "source_file": "3-采购合同关键条款确认稿.txt",
+        "extraction_method": "regex",
+        "evidence": [
+          {
+            "chunk_id": "chunk-0000",
+            "start": 100,
+            "end": 102,
+            "text": "DZZ-CG-2026-0818\n甲方：华东智造集团有限公司\n乙方：上海云启科技有限公司\n甲方联系人：王强\n乙方联系人：陈晨\n合同金额：人民币128万元\n签订日期：2026年8月18日\n生效日期：2026年8月18日\n计划交付日期：2026年1"
+          }
+        ],
+        "scenario_refs": [
+          {
+            "id": "procurement-compliance",
+            "name": "采购合规审查",
+            "version": 1
+          },
+          {
+            "id": "contract-key-terms",
+            "name": "合同关键要素",
+            "version": 1
+          }
+        ],
+        "source_files": [
+          "3-采购合同关键条款确认稿.txt"
+        ],
+        "document_ids": [
+          "doc_de6362cdbaaf1a10"
+        ]
+      }
+    },
+    {
+      "id": "ent_62dfc2b76ba0835c",
+      "type": "PURCHASE_PROJECT",
+      "text": "2026年智能仓储系统采购项目",
+      "confidence": 0.75,
+      "metadata": {
+        "document_id": "doc_dffcad73d78c1d75",
+        "source_file": "1-采购立项与评审记录.txt",
+        "extraction_method": "regex",
+        "evidence": [
+          {
+            "chunk_id": "chunk-0000",
+            "start": 22,
+            "end": 37,
+            "text": "华东智造集团采购立项与评审记录\n\n项目名称：2026年智能仓储系统采购项目\n采购人：华东智造集团有限公司\n代理机构：上海恒信招标代理有限公司\n供应商：上海云启科技有限公司\n项目负责人：王强\n预算"
+          }
+        ],
+        "scenario_refs": [
+          {
+            "id": "procurement-compliance",
+            "name": "采购合规审查",
+            "version": 1
+          }
+        ],
+        "source_files": [
+          "1-采购立项与评审记录.txt"
+        ],
+        "document_ids": [
+          "doc_dffcad73d78c1d75"
+        ]
+      }
+    },
+    {
+      "id": "ent_48c81f2d1c0681c2",
+      "type": "REGULATION",
+      "text": "《华东智造集团采购管理办法》",
+      "confidence": 0.75,
+      "metadata": {
+        "document_id": "doc_dffcad73d78c1d75",
+        "source_file": "1-采购立项与评审记录.txt",
+        "extraction_method": "regex",
+        "evidence": [
+          {
+            "chunk_id": "chunk-0000",
+            "start": 349,
+            "end": 363,
+            "text": "专家李明未在评审前主动披露该持股关系。上海云启科技有限公司存在关联关系未披露风险。\n\n2026年智能仓储系统采购项目适用《华东智造集团采购管理办法》。采购部门要求合规人员复核专家回避程序，并形成书面处理意见。"
+          }
+        ],
+        "scenario_refs": [
+          {
+            "id": "procurement-compliance",
+            "name": "采购合规审查",
+            "version": 1
+          }
+        ],
+        "source_files": [
+          "1-采购立项与评审记录.txt"
+        ],
+        "document_ids": [
+          "doc_dffcad73d78c1d75"
+        ]
+      }
+    },
+    {
+      "id": "ent_1805be1f0e03811d",
+      "type": "RISK",
+      "text": "关联关系未披露风险",
+      "confidence": 0.75,
+      "metadata": {
+        "document_id": "doc_dffcad73d78c1d75",
+        "source_file": "1-采购立项与评审记录.txt",
+        "extraction_method": "regex",
+        "evidence": [
+          {
+            "chunk_id": "chunk-0000",
+            "start": 320,
+            "end": 329,
+            "text": "标。\n\n经补充核查，李明是上海云启科技有限公司的股东。评审专家李明未在评审前主动披露该持股关系。上海云启科技有限公司存在关联关系未披露风险。\n\n2026年智能仓储系统采购项目适用《华东智造集团采购管理办法》。采购部门要求合规人员复核专家回避程序，并形成书面处"
+          },
+          {
+            "chunk_id": "chunk-0000",
+            "start": 157,
+            "end": 166,
+            "text": "云启科技有限公司的股东。公开信息核查范围包括工商登记与法院公开信息。本次采购评审材料中未披露李明与该公司的持股关系，形成关联关系未披露风险。\n\n供应商：宁波汇达设备有限公司\n法定代表人：周海\n核查日期：2026年8月10日\n\n宁波汇达设备有限公司\n名单生效日"
+          }
+        ],
+        "scenario_refs": [
+          {
+            "id": "procurement-compliance",
+            "name": "采购合规审查",
+            "version": 1
+          },
+          {
+            "id": "supplier-risk",
+            "name": "供应商风险画像",
+            "version": 1
+          }
+        ],
+        "source_files": [
+          "1-采购立项与评审记录.txt",
+          "2-供应商尽调与风险核查报告.txt"
+        ],
+        "document_ids": [
+          "doc_dffcad73d78c1d75",
+          "doc_f71895663baa2ff8"
+        ]
+      }
+    },
+    {
+      "id": "ent_f7f6ba2b866a2a3b",
+      "type": "RISK",
+      "text": "利益冲突",
+      "confidence": 0.75,
+      "metadata": {
+        "document_id": "doc_f71895663baa2ff8",
+        "source_file": "2-供应商尽调与风险核查报告.txt",
+        "extraction_method": "regex",
+        "evidence": [
+          {
+            "chunk_id": "chunk-0000",
+            "start": 304,
+            "end": 308,
+            "text": "有限公司被列入供应商禁入名单。名单有效期尚未届满，不得参与本集团新的采购项目。\n\n核查结论：上海云启科技有限公司需要补充利益冲突说明；宁波汇达设备有限公司不具备本次采购准入资格。"
+          },
+          {
+            "chunk_id": "chunk-0000",
+            "start": 444,
+            "end": 448,
+            "text": "逾期一日应当按合同金额的0.05%支付违约金；逾期超过三十日，甲方有权解除合同。\n\n特别约定：乙方应当在签约前提交完整的利益冲突声明。若隐瞒关联关系，甲方有权暂停付款并启动合规复核。"
+          }
+        ],
+        "scenario_refs": [
+          {
+            "id": "supplier-risk",
+            "name": "供应商风险画像",
+            "version": 1
+          }
+        ],
+        "source_files": [
+          "2-供应商尽调与风险核查报告.txt",
+          "3-采购合同关键条款确认稿.txt"
+        ],
+        "document_ids": [
+          "doc_f71895663baa2ff8",
+          "doc_de6362cdbaaf1a10"
+        ]
+      }
+    }
+  ],
+  "relationships": [
+    {
+      "id": "rel_220674db5787358d",
+      "source": "ent_e84912469fc94887",
+      "target": "ent_62dfc2b76ba0835c",
+      "type": "AWARDED_PROJECT",
+      "weight": 0.75,
+      "valid_from": null,
+      "valid_until": null,
+      "metadata": {
+        "confidence": 0.75,
+        "document_id": "doc_dffcad73d78c1d75",
+        "source_file": "1-采购立项与评审记录.txt",
+        "extraction_method": "regex",
+        "temporal_confidence": null,
+        "temporal_source_text": null,
+        "evidence": [
+          {
+            "chunk_id": "chunk-0000",
+            "text": "员会依据技术方案、实施周期、售后服务和报价进行综合评分。\n\n上海云启科技有限公司中标2026年智能仓储系统采购项目。\n上海云启科技有限公司以人民币128万元中标。\n\n经补充核"
+          }
+        ],
+        "scenario_refs": [
+          {
+            "id": "procurement-compliance",
+            "name": "采购合规审查",
+            "version": 1
+          }
+        ],
+        "source_files": [
+          "1-采购立项与评审记录.txt"
+        ],
+        "document_ids": [
+          "doc_dffcad73d78c1d75"
+        ]
+      }
+    },
+    {
+      "id": "rel_eb7d1e65fac2b2dd",
+      "source": "ent_e84912469fc94887",
+      "target": "ent_9d90e12f80a02cf4",
+      "type": "HAS_AMOUNT",
+      "weight": 0.75,
+      "valid_from": null,
+      "valid_until": null,
+      "metadata": {
+        "confidence": 0.75,
+        "document_id": "doc_dffcad73d78c1d75",
+        "source_file": "1-采购立项与评审记录.txt",
+        "extraction_method": "regex",
+        "temporal_confidence": null,
+        "temporal_source_text": null,
+        "evidence": [
+          {
+            "chunk_id": "chunk-0000",
+            "text": "上海云启科技有限公司中标2026年智能仓储系统采购项目。\n上海云启科技有限公司以人民币128万元中标。\n\n经补充核查，李明是上海云启科技有限公司的股东。评审专家"
+          }
+        ],
+        "scenario_refs": [
+          {
+            "id": "procurement-compliance",
+            "name": "采购合规审查",
+            "version": 1
+          }
+        ],
+        "source_files": [
+          "1-采购立项与评审记录.txt"
+        ],
+        "document_ids": [
+          "doc_dffcad73d78c1d75"
+        ]
+      }
+    },
+    {
+      "id": "rel_cc6daa746bc8e034",
+      "source": "ent_e84912469fc94887",
+      "target": "ent_1805be1f0e03811d",
+      "type": "HAS_RISK",
+      "weight": 0.75,
+      "valid_from": null,
+      "valid_until": null,
+      "metadata": {
+        "confidence": 0.75,
+        "document_id": "doc_dffcad73d78c1d75",
+        "source_file": "1-采购立项与评审记录.txt",
+        "extraction_method": "regex",
+        "temporal_confidence": null,
+        "temporal_source_text": null,
+        "evidence": [
+          {
+            "chunk_id": "chunk-0000",
+            "text": "技有限公司的股东。评审专家李明未在评审前主动披露该持股关系。上海云启科技有限公司存在关联关系未披露风险。\n\n2026年智能仓储系统采购项目适用《华东智造集团采购管"
+          }
+        ],
+        "scenario_refs": [
+          {
+            "id": "procurement-compliance",
+            "name": "采购合规审查",
+            "version": 1
+          }
+        ],
+        "source_files": [
+          "1-采购立项与评审记录.txt"
+        ],
+        "document_ids": [
+          "doc_dffcad73d78c1d75"
+        ]
+      }
+    },
+    {
+      "id": "rel_87c9d5b5e7d6a8be",
+      "source": "ent_2afcdb7060fac284",
+      "target": "ent_c5d15a03cf5f2734",
+      "type": "LISTED_IN",
+      "weight": 0.75,
+      "valid_from": null,
+      "valid_until": null,
+      "metadata": {
+        "confidence": 0.75,
+        "document_id": "doc_f71895663baa2ff8",
+        "source_file": "2-供应商尽调与风险核查报告.txt",
+        "extraction_method": "regex",
+        "temporal_confidence": null,
+        "temporal_source_text": null,
+        "evidence": [
+          {
+            "chunk_id": "chunk-0000",
+            "text": "宁波汇达设备有限公司\n名单生效日期：2026年5月6日\n宁波汇达设备有限公司被列入供应商禁入名单。名单有效期尚未届满，不得参与本集团新的采购项目。\n\n核查结"
+          }
+        ],
+        "scenario_refs": [
+          {
+            "id": "procurement-compliance",
+            "name": "采购合规审查",
+            "version": 1
+          },
+          {
+            "id": "supplier-risk",
+            "name": "供应商风险画像",
+            "version": 1
+          }
+        ],
+        "source_files": [
+          "2-供应商尽调与风险核查报告.txt"
+        ],
+        "document_ids": [
+          "doc_f71895663baa2ff8"
+        ]
+      }
+    },
+    {
+      "id": "rel_b97fdb6f7319dc7e",
+      "source": "ent_f060920594b0c736",
+      "target": "ent_e84912469fc94887",
+      "type": "SHAREHOLDER_OF",
+      "weight": 0.75,
+      "valid_from": null,
+      "valid_until": null,
+      "metadata": {
+        "confidence": 0.75,
+        "document_id": "doc_dffcad73d78c1d75",
+        "source_file": "1-采购立项与评审记录.txt",
+        "extraction_method": "regex",
+        "temporal_confidence": null,
+        "temporal_source_text": null,
+        "evidence": [
+          {
+            "chunk_id": "chunk-0000",
+            "text": "上海云启科技有限公司以人民币128万元中标。\n\n经补充核查，李明是上海云启科技有限公司的股东。评审专家李明未在评审前主动披露该持股关系。上海云启科技有限"
+          },
+          {
+            "chunk_id": "chunk-0000",
+            "text": "海云启科技有限公司是一家智能仓储软件与自动化设备集成供应商。李明是上海云启科技有限公司的股东。公开信息核查范围包括工商登记与法院公开信息。本次采购评审材"
+          }
+        ],
+        "scenario_refs": [
+          {
+            "id": "procurement-compliance",
+            "name": "采购合规审查",
+            "version": 1
+          },
+          {
+            "id": "supplier-risk",
+            "name": "供应商风险画像",
+            "version": 1
+          }
+        ],
+        "source_files": [
+          "1-采购立项与评审记录.txt",
+          "2-供应商尽调与风险核查报告.txt"
+        ],
+        "document_ids": [
+          "doc_dffcad73d78c1d75",
+          "doc_f71895663baa2ff8"
+        ]
+      }
+    },
+    {
+      "id": "rel_cd324c88ec41830a",
+      "source": "ent_62dfc2b76ba0835c",
+      "target": "ent_48c81f2d1c0681c2",
+      "type": "SUBJECT_TO",
+      "weight": 0.75,
+      "valid_from": null,
+      "valid_until": null,
+      "metadata": {
+        "confidence": 0.75,
+        "document_id": "doc_dffcad73d78c1d75",
+        "source_file": "1-采购立项与评审记录.txt",
+        "extraction_method": "regex",
+        "temporal_confidence": null,
+        "temporal_source_text": null,
+        "evidence": [
+          {
+            "chunk_id": "chunk-0000",
+            "text": "该持股关系。上海云启科技有限公司存在关联关系未披露风险。\n\n2026年智能仓储系统采购项目适用《华东智造集团采购管理办法》。采购部门要求合规人员复核专家回避程序，并形成书面处理意见。"
+          }
+        ],
+        "scenario_refs": [
+          {
+            "id": "procurement-compliance",
+            "name": "采购合规审查",
+            "version": 1
+          }
+        ],
+        "source_files": [
+          "1-采购立项与评审记录.txt"
+        ],
+        "document_ids": [
+          "doc_dffcad73d78c1d75"
+        ]
+      }
+    }
+  ],
+  "statistics": {
+    "documents": 3,
+    "documents_failed": 0,
+    "template_runs": 9,
+    "template_runs_failed": 0,
+    "chunks": 9,
+    "chunks_processed": 9,
+    "entities": 48,
+    "relationships": 6,
+    "warnings": 0
+  },
+  "warnings": [],
+  "job_id": "offline-procurement-demo"
+}

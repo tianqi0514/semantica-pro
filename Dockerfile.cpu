@@ -11,7 +11,7 @@ RUN mkdir -p /app/semantica && npm run build
 
 # Gensim 4.4 ships Linux wheels through CPython 3.13. Python 3.14 would
 # require a source build and a compiler toolchain in this slim runtime.
-FROM python:3.13-slim AS runtime
+FROM python:3.14-slim AS runtime
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
